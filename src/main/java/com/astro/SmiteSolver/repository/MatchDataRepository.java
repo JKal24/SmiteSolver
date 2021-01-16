@@ -1,4 +1,7 @@
 package com.astro.SmiteSolver.repository;
 
-public interface MatchDataRepository {
+import com.astro.SmiteSolver.object.MatchData;
+import org.springframework.data.repository.CrudRepository;
+
+public interface MatchDataRepository extends CrudRepository<MatchData, Integer> {
 }

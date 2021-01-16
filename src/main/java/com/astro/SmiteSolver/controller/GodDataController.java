@@ -2,7 +2,7 @@ package com.astro.SmiteSolver.controller;
 
 import com.astro.SmiteSolver.object.GodStatistics;
 import com.astro.SmiteSolver.object.GodNames;
-import com.astro.SmiteSolver.repository.GodDataRepository;
+import com.astro.SmiteSolver.repository.GodStatisticsRepository;
 import com.astro.SmiteSolver.repository.GodNamesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class GodDataController {
 
     @Autowired
-    private GodDataRepository godStatisticsRepository;
+    private GodStatisticsRepository godStatisticsRepository;
 
     @Autowired
     private GodNamesRepository godNamesRepository;
