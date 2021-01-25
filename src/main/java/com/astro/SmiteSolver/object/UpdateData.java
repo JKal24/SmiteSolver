@@ -1,8 +1,6 @@
 package com.astro.SmiteSolver.object;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import java.time.LocalDate;
 
@@ -10,20 +8,12 @@ import java.time.LocalDate;
 public class UpdateData {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
-    private Integer id;
+    private Integer date;
 
+    @Id
     private LocalDate updatedDate;
 
-    private Float version;
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
+    private Double version;
 
     public LocalDate getUpdatedDate() {
         return updatedDate;
@@ -33,11 +23,11 @@ public class UpdateData {
         this.updatedDate = updatedDate;
     }
 
-    public Float getVersion() {
+    public Double getVersion() {
         return version;
     }
 
-    public void setVersion(Float version) {
+    public void setVersion(Double version) {
         this.version = version;
     }
 }

@@ -2,6 +2,7 @@ package com.astro.SmiteSolver.data;
 
 import com.astro.SmiteSolver.object.GodData;
 import com.astro.SmiteSolver.object.MatchData;
+import com.astro.SmiteSolver.repository.GodDataRepository;
 import com.astro.SmiteSolver.repository.UpdateRepository;
 import com.astro.smitebasic.api.SmiteAPI;
 import com.astro.smitebasic.api.Utils;
@@ -21,10 +22,13 @@ import java.util.Arrays;
 public class MatchParserService {
 
     @Autowired
-    SmiteAPI api;
+    private SmiteAPI api;
 
     @Autowired
-    UpdateRepository updateRepository;
+    private UpdateRepository updateRepository;
+
+    @Autowired
+    private GodDataService godDataService;
 
     public void updateData() {
         updateRepository.findAll().forEach(data -> {
@@ -32,9 +36,6 @@ public class MatchParserService {
             if(isUpdatableDate(data.getUpdatedDate())) {
 
                 LocalDate date = LocalDate.ofInstant(Instant.now(), ZoneId.of("UTC"));
-
-                GodData godData = new GodData();
-                MatchData matchData = new MatchData();
 
                 for(int parseHours = 0; parseHours < 24; parseHours++) {
                     Integer[] matchIDs = Arrays.stream(api.getMatchIDs(Mode.CONQUEST_LEAGUE.getModeID(), parseHours))
@@ -46,10 +47,7 @@ public class MatchParserService {
 
                         for(int parseMatch = 0; parseMatch < matchInfo.length; parseMatch++) {
                             PlayerMatchData playerMatchData = matchInfo[parseMatch];
-//                            GodData godData = new GodData(date, playerMatchData.getGodID(), playerMatchData.getItemID1(), playerMatchData.getItemID2(),
-//                                    playerMatchData.getItemID3(), playerMatchData.getItemID4(), playerMatchData.getItemID5(), playerMatchData.getItemID6(),
-//                                    playerMatchData.getActiveId1(), playerMatchData.getActiveId2(), playerMatchData.getWinStatus().equals("Winner"),
-//                                    playerMatchData.getSkin(), playerMatchData.getDamagePlayer(), playerMatchData.getBasicAttackDamage(), playerMatchData.getDamageMitigated());
+
 
                         }
 
@@ -69,7 +67,6 @@ public class MatchParserService {
             if(Float.parseFloat(versionString) != data.getVersion()) {
                 // Update entire database, look for new gods, reset win rate data, etc.
             }
-
         });
     }
 

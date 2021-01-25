@@ -5,15 +5,11 @@ import java.time.LocalDate;
 import java.util.Map;
 
 @Entity
-@Table()
 public class GodData {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
-    private Integer id;
-    private LocalDate date;
-
     private Integer godID;
+    private LocalDate date;
 
     private Map<String, Integer> popularSkins;
 
@@ -33,34 +29,40 @@ public class GodData {
     private Integer bansMediumMMR;
     private Integer bansLowMMR;
 
+    @ElementCollection
     private Map<String, Integer> popularItemsHighMMR;
+    @ElementCollection
     private Map<String, Integer> popularItemsMediumMMR;
+    @ElementCollection
     private Map<String, Integer> popularItemsLowMMR;
 
     private Map<String, Integer> popularActivesHighMMR;
+    @ElementCollection
     private Map<String, Integer> popularActivesMediumMMR;
+    @ElementCollection
     private Map<String, Integer> popularActivesLowMMR;
+    @ElementCollection
 
-    private Integer meanDamageDoneHighMMR;
-    private Integer meanDamageDoneMediumMMR;
-    private Integer meanDamageDoneLowMMR;
+    private Integer damageDoneHighMMR;
+    private Integer damageDoneMediumMMR;
+    private Integer damageDoneLowMMR;
 
-    private Integer meanBasicAttackDamageHighMMR;
-    private Integer meanBasicAttackDamageMediumMMR;
-    private Integer meanBasicAttackDamageLowMMR;
+    private Integer basicAttackDamageHighMMR;
+    private Integer basicAttackDamageMediumMMR;
+    private Integer basicAttackDamageLowMMR;
 
-    private Integer meanDamageMitigatedHighMMR;
-    private Integer meanDamageMitigatedMediumMMR;
-    private Integer meanDamageMitigatedLowMMR;
+    private Integer damageMitigatedHighMMR;
+    private Integer damageMitigatedMediumMMR;
+    private Integer damageMitigatedLowMMR;
 
     public GodData(LocalDate date, Integer godID, Map<String, Integer> popularSkins, Integer matchesHighMMR,
                    Integer matchesMediumMMR, Integer matchesLowMMR, Integer winsHighMMR, Integer winsMediumMMR, Integer winsLowMMR,
                    Integer lossesHighMMR, Integer lossesMediumMMR, Integer lossesLowMMR, Integer bansHighMMR, Integer bansMediumMMR,
                    Integer bansLowMMR, Map<String, Integer> popularItemsHighMMR, Map<String, Integer> popularItemsMediumMMR,
                    Map<String, Integer> popularItemsLowMMR, Map<String, Integer> popularActivesHighMMR, Map<String, Integer> popularActivesMediumMMR,
-                   Map<String, Integer> popularActivesLowMMR, Integer meanDamageDoneHighMMR, Integer meanDamageDoneMediumMMR,
-                   Integer meanDamageDoneLowMMR, Integer meanBasicAttackDamageHighMMR, Integer meanBasicAttackDamageMediumMMR,
-                   Integer meanBasicAttackDamageLowMMR, Integer meanDamageMitigatedHighMMR, Integer meanDamageMitigatedMediumMMR, Integer meanDamageMitigatedLowMMR) {
+                   Map<String, Integer> popularActivesLowMMR, Integer damageDoneHighMMR, Integer damageDoneMediumMMR,
+                   Integer damageDoneLowMMR, Integer basicAttackDamageHighMMR, Integer basicAttackDamageMediumMMR,
+                   Integer basicAttackDamageLowMMR, Integer damageMitigatedHighMMR, Integer damageMitigatedMediumMMR, Integer damageMitigatedLowMMR) {
         this.date = date;
         this.godID = godID;
         this.popularSkins = popularSkins;
@@ -82,25 +84,25 @@ public class GodData {
         this.popularActivesHighMMR = popularActivesHighMMR;
         this.popularActivesMediumMMR = popularActivesMediumMMR;
         this.popularActivesLowMMR = popularActivesLowMMR;
-        this.meanDamageDoneHighMMR = meanDamageDoneHighMMR;
-        this.meanDamageDoneMediumMMR = meanDamageDoneMediumMMR;
-        this.meanDamageDoneLowMMR = meanDamageDoneLowMMR;
-        this.meanBasicAttackDamageHighMMR = meanBasicAttackDamageHighMMR;
-        this.meanBasicAttackDamageMediumMMR = meanBasicAttackDamageMediumMMR;
-        this.meanBasicAttackDamageLowMMR = meanBasicAttackDamageLowMMR;
-        this.meanDamageMitigatedHighMMR = meanDamageMitigatedHighMMR;
-        this.meanDamageMitigatedMediumMMR = meanDamageMitigatedMediumMMR;
-        this.meanDamageMitigatedLowMMR = meanDamageMitigatedLowMMR;
+        this.damageDoneHighMMR = damageDoneHighMMR;
+        this.damageDoneMediumMMR = damageDoneMediumMMR;
+        this.damageDoneLowMMR = damageDoneLowMMR;
+        this.basicAttackDamageHighMMR = basicAttackDamageHighMMR;
+        this.basicAttackDamageMediumMMR = basicAttackDamageMediumMMR;
+        this.basicAttackDamageLowMMR = basicAttackDamageLowMMR;
+        this.damageMitigatedHighMMR = damageMitigatedHighMMR;
+        this.damageMitigatedMediumMMR = damageMitigatedMediumMMR;
+        this.damageMitigatedLowMMR = damageMitigatedLowMMR;
     }
 
     public GodData() { }
 
-    public Integer getId() {
-        return id;
+    public Integer getGodID() {
+        return godID;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public void setGodID(Integer godID) {
+        this.godID = godID;
     }
 
     public LocalDate getDate() {
@@ -109,14 +111,6 @@ public class GodData {
 
     public void setDate(LocalDate date) {
         this.date = date;
-    }
-
-    public Integer getGodID() {
-        return godID;
-    }
-
-    public void setGodID(Integer godID) {
-        this.godID = godID;
     }
 
     public Map<String, Integer> getPopularSkins() {
@@ -271,75 +265,75 @@ public class GodData {
         this.popularActivesLowMMR = popularActivesLowMMR;
     }
 
-    public Integer getMeanDamageDoneHighMMR() {
-        return meanDamageDoneHighMMR;
+    public Integer getDamageDoneHighMMR() {
+        return damageDoneHighMMR;
     }
 
-    public void setMeanDamageDoneHighMMR(Integer meanDamageDoneHighMMR) {
-        this.meanDamageDoneHighMMR = meanDamageDoneHighMMR;
+    public void setDamageDoneHighMMR(Integer damageDoneHighMMR) {
+        this.damageDoneHighMMR = damageDoneHighMMR;
     }
 
-    public Integer getMeanDamageDoneMediumMMR() {
-        return meanDamageDoneMediumMMR;
+    public Integer getDamageDoneMediumMMR() {
+        return damageDoneMediumMMR;
     }
 
-    public void setMeanDamageDoneMediumMMR(Integer meanDamageDoneMediumMMR) {
-        this.meanDamageDoneMediumMMR = meanDamageDoneMediumMMR;
+    public void setDamageDoneMediumMMR(Integer damageDoneMediumMMR) {
+        this.damageDoneMediumMMR = damageDoneMediumMMR;
     }
 
-    public Integer getMeanDamageDoneLowMMR() {
-        return meanDamageDoneLowMMR;
+    public Integer getDamageDoneLowMMR() {
+        return damageDoneLowMMR;
     }
 
-    public void setMeanDamageDoneLowMMR(Integer meanDamageDoneLowMMR) {
-        this.meanDamageDoneLowMMR = meanDamageDoneLowMMR;
+    public void setDamageDoneLowMMR(Integer damageDoneLowMMR) {
+        this.damageDoneLowMMR = damageDoneLowMMR;
     }
 
-    public Integer getMeanBasicAttackDamageHighMMR() {
-        return meanBasicAttackDamageHighMMR;
+    public Integer getBasicAttackDamageHighMMR() {
+        return basicAttackDamageHighMMR;
     }
 
-    public void setMeanBasicAttackDamageHighMMR(Integer meanBasicAttackDamageHighMMR) {
-        this.meanBasicAttackDamageHighMMR = meanBasicAttackDamageHighMMR;
+    public void setBasicAttackDamageHighMMR(Integer basicAttackDamageHighMMR) {
+        this.basicAttackDamageHighMMR = basicAttackDamageHighMMR;
     }
 
-    public Integer getMeanBasicAttackDamageMediumMMR() {
-        return meanBasicAttackDamageMediumMMR;
+    public Integer getBasicAttackDamageMediumMMR() {
+        return basicAttackDamageMediumMMR;
     }
 
-    public void setMeanBasicAttackDamageMediumMMR(Integer meanBasicAttackDamageMediumMMR) {
-        this.meanBasicAttackDamageMediumMMR = meanBasicAttackDamageMediumMMR;
+    public void setBasicAttackDamageMediumMMR(Integer basicAttackDamageMediumMMR) {
+        this.basicAttackDamageMediumMMR = basicAttackDamageMediumMMR;
     }
 
-    public Integer getMeanBasicAttackDamageLowMMR() {
-        return meanBasicAttackDamageLowMMR;
+    public Integer getBasicAttackDamageLowMMR() {
+        return basicAttackDamageLowMMR;
     }
 
-    public void setMeanBasicAttackDamageLowMMR(Integer meanBasicAttackDamageLowMMR) {
-        this.meanBasicAttackDamageLowMMR = meanBasicAttackDamageLowMMR;
+    public void setBasicAttackDamageLowMMR(Integer basicAttackDamageLowMMR) {
+        this.basicAttackDamageLowMMR = basicAttackDamageLowMMR;
     }
 
-    public Integer getMeanDamageMitigatedHighMMR() {
-        return meanDamageMitigatedHighMMR;
+    public Integer getDamageMitigatedHighMMR() {
+        return damageMitigatedHighMMR;
     }
 
-    public void setMeanDamageMitigatedHighMMR(Integer meanDamageMitigatedHighMMR) {
-        this.meanDamageMitigatedHighMMR = meanDamageMitigatedHighMMR;
+    public void setDamageMitigatedHighMMR(Integer damageMitigatedHighMMR) {
+        this.damageMitigatedHighMMR = damageMitigatedHighMMR;
     }
 
-    public Integer getMeanDamageMitigatedMediumMMR() {
-        return meanDamageMitigatedMediumMMR;
+    public Integer getDamageMitigatedMediumMMR() {
+        return damageMitigatedMediumMMR;
     }
 
-    public void setMeanDamageMitigatedMediumMMR(Integer meanDamageMitigatedMediumMMR) {
-        this.meanDamageMitigatedMediumMMR = meanDamageMitigatedMediumMMR;
+    public void setDamageMitigatedMediumMMR(Integer damageMitigatedMediumMMR) {
+        this.damageMitigatedMediumMMR = damageMitigatedMediumMMR;
     }
 
-    public Integer getMeanDamageMitigatedLowMMR() {
-        return meanDamageMitigatedLowMMR;
+    public Integer getDamageMitigatedLowMMR() {
+        return damageMitigatedLowMMR;
     }
 
-    public void setMeanDamageMitigatedLowMMR(Integer meanDamageMitigatedLowMMR) {
-        this.meanDamageMitigatedLowMMR = meanDamageMitigatedLowMMR;
+    public void setDamageMitigatedLowMMR(Integer damageMitigatedLowMMR) {
+        this.damageMitigatedLowMMR = damageMitigatedLowMMR;
     }
 }
