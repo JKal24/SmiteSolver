@@ -11,6 +11,7 @@ public class GodData {
     private Integer godID;
     private LocalDate date;
 
+    @ElementCollection
     private Map<String, Integer> popularSkins;
 
     private Integer matchesHighMMR;
@@ -36,12 +37,12 @@ public class GodData {
     @ElementCollection
     private Map<String, Integer> popularItemsLowMMR;
 
+    @ElementCollection
     private Map<String, Integer> popularActivesHighMMR;
     @ElementCollection
     private Map<String, Integer> popularActivesMediumMMR;
     @ElementCollection
     private Map<String, Integer> popularActivesLowMMR;
-    @ElementCollection
 
     private Integer damageDoneHighMMR;
     private Integer damageDoneMediumMMR;

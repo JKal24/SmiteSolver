@@ -1,5 +1,6 @@
 package com.astro.SmiteSolver.object;
 
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -21,6 +22,7 @@ public class GodStatistics {
 
     private BigDecimal banRate;
 
+    @ElementCollection
     private List<String> recommendedItems;
 
     public GodStatistics(Integer godID, String godName, BigDecimal winRate, BigDecimal pickRate, BigDecimal banRate, List<String> recommendedItems) {

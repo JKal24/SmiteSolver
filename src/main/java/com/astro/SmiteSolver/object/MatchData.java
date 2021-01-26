@@ -15,10 +15,12 @@ public class MatchData {
 
     private LocalDate date;
 
+    @ElementCollection
     private Map<Integer, Integer> winsPerSideSelectionHighMMR;
+    @ElementCollection
     private Map<Integer, Integer> winsPerSideSelectionMediumMMR;
+    @ElementCollection
     private Map<Integer, Integer> winsPerSideSelectionLowMMR;
-
 
     public MatchData() { }
 
