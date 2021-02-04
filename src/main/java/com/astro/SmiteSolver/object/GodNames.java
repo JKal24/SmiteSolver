@@ -2,8 +2,10 @@ package com.astro.SmiteSolver.object;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
+@Table(name="god_names")
 public class GodNames {
 
     @Id

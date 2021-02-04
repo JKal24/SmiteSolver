@@ -16,16 +16,18 @@ public class ServiceTests {
     @Autowired
     private UpdateService updateService;
 
+    // Used to test update service before it went live
+
     @Test
     public void updateTest() {
-        updateService.addUpdate(LocalDate.ofInstant(Instant.now(), ZoneId.of("UTC")).minusDays(3), 7.12);
+        updateService.addUpdate(LocalDate.ofInstant(Instant.now(), ZoneId.of("UTC")).minusDays(31), 7.12);
         updateService.addUpdate(LocalDate.ofInstant(Instant.now(), ZoneId.of("UTC")).minusDays(6), 7.15);
         updateService.addUpdate(LocalDate.ofInstant(Instant.now(), ZoneId.of("UTC")).minusDays(9), 7.14);
 
         assertThat(updateService.isUpdatableDate()).isNotEqualTo(false);
 
-        updateService.cleanUpdates(4);
-        assertThat(updateService.getDaysStored()).isEqualTo(1);
+        updateService.cleanUpdates();
+        assertThat(updateService.getDaysStored()).isEqualTo(2);
     }
 
 }

@@ -1,5 +1,6 @@
 package com.astro.SmiteSolver.data;
 
+import com.astro.SmiteSolver.repository.GodNamesRepository;
 import com.astro.SmiteSolver.repository.UpdateRepository;
 import com.astro.smitebasic.api.SmiteAPI;
 import com.astro.smitebasic.api.Utils;
@@ -9,6 +10,8 @@ import com.astro.smitebasic.objects.player.matches.PlayerMatchData;
 import com.astro.smitebasic.utils.Mode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -18,6 +21,8 @@ import java.time.ZoneId;
 import java.util.Arrays;
 
 @Service
+@EnableJpaRepositories("com.astro.smitebasic.objects.session")
+@ComponentScan({"com.astro.smitebasic.api", "com.astro.smitebasic.objects.session"})
 public class MatchParserService {
 
     @Value("${smite.api}")
@@ -37,6 +42,9 @@ public class MatchParserService {
 
     @Autowired
     private GodDataService godDataService;
+
+    @Autowired
+    private GodNamesRepository godNamesRepository;
 
     @PostConstruct
     private void initializeAPI() {

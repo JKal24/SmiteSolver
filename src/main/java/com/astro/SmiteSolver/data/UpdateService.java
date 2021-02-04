@@ -13,6 +13,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Service
 public class UpdateService {
 
+    private final int DATA_DELETION_DAY_LIMIT = 30;
+
     @Autowired
     private UpdateRepository updateRepository;
 
@@ -24,21 +26,17 @@ public class UpdateService {
     }
 
     public boolean isUpdatableDate() {
-        Integer date = getDate(1);
+        LocalDate date = getComparableDate(1);
         return updateRepository.findById(date).isEmpty();
     }
 
-    public void cleanUpdates(int daysBehind) {
-        Integer date = getDate(daysBehind);
+    public void cleanUpdates() {
+        LocalDate comparableDate = getComparableDate(DATA_DELETION_DAY_LIMIT);
 
-        while (true) {
-            if (updateRepository.findById(date).isPresent()) {
-                updateRepository.delete(updateRepository.findById(date).get());
-            } else {
-                return;
+        for (UpdateData data : updateRepository.findAll()) {
+            if (comparableDate.isAfter(data.getUpdatedDate())) {
+                updateRepository.delete(data);
             }
-
-            date = getDate(++daysBehind);
         }
     }
 
@@ -48,8 +46,7 @@ public class UpdateService {
         return size.get();
     }
 
-    private Integer getDate(int daysBehind) {
-        LocalDate currentDate = LocalDate.ofInstant(Instant.now(), ZoneId.of("UTC")).minusDays(daysBehind);
-        return Integer.parseInt(currentDate.toString().replaceAll("[^\\d]", ""));
+    private LocalDate getComparableDate(int daysBehind) {
+        return LocalDate.ofInstant(Instant.now(), ZoneId.of("UTC")).minusDays(daysBehind);
     }
 }

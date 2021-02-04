@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.util.Map;
 
 @Entity
+@Table(name="god_data")
 public class GodData {
 
     @Id
@@ -31,17 +32,39 @@ public class GodData {
     private Integer bansLowMMR;
 
     @ElementCollection
+    @MapKeyColumn(name="items_high_mmr")
+    @Column(name="item_high_mrr_id")
+    @CollectionTable(name="popular_items_high_mmr", joinColumns=@JoinColumn(name="popular_items_high_mmr_id"))
     private Map<String, Integer> popularItemsHighMMR;
+
     @ElementCollection
+    @MapKeyColumn(name="items_medium_mmr")
+    @Column(name="item_medium_mmr_id")
+    @CollectionTable(name="popular_items_medium_mmr", joinColumns=@JoinColumn(name="popular_items_medium_mmr_id"))
     private Map<String, Integer> popularItemsMediumMMR;
+
     @ElementCollection
+    @MapKeyColumn(name="items_low_mmr")
+    @Column(name="items_low_mmr_id")
+    @CollectionTable(name="popular_items_low_mmr", joinColumns=@JoinColumn(name="popular_items_low_mmr_id"))
     private Map<String, Integer> popularItemsLowMMR;
 
     @ElementCollection
+    @MapKeyColumn(name="items_high_mmr")
+    @Column(name="item_id")
+    @CollectionTable(name="popular_items_high_mmr", joinColumns=@JoinColumn(name="popular_items_high_mmr_id"))
     private Map<String, Integer> popularActivesHighMMR;
+
     @ElementCollection
+    @MapKeyColumn(name="items_high_mmr")
+    @Column(name="item_id")
+    @CollectionTable(name="popular_items_high_mmr", joinColumns=@JoinColumn(name="popular_items_high_mmr_id"))
     private Map<String, Integer> popularActivesMediumMMR;
+
     @ElementCollection
+    @MapKeyColumn(name="items_high_mmr")
+    @Column(name="item_id")
+    @CollectionTable(name="popular_items_high_mmr", joinColumns=@JoinColumn(name="popular_items_high_mmr_id"))
     private Map<String, Integer> popularActivesLowMMR;
 
     private Integer damageDoneHighMMR;

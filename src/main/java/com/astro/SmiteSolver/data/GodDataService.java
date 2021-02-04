@@ -4,10 +4,12 @@ import com.astro.SmiteSolver.object.GodData;
 import com.astro.SmiteSolver.repository.GodDataRepository;
 import com.astro.smitebasic.objects.player.matches.PlayerMatchData;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.List;
 
+@Service
 public class GodDataService {
 
     @Autowired

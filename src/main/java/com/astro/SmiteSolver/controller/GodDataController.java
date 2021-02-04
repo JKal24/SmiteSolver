@@ -25,8 +25,7 @@ public class GodDataController {
     }
 
     @GetMapping("/statistics/{god}")
-    public @ResponseBody
-    GodStatistics getGodStatistics(@PathVariable String godName) {
+    public @ResponseBody GodStatistics getGodStatistics(@PathVariable String godName) {
         for (GodNames godNames : godNamesRepository.findAll()) {
             if (godNames.getGodName().equals(godName)) {
                 return godStatisticsRepository.findById(godNames.getGodID()).get();

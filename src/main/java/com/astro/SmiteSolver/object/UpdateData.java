@@ -1,15 +1,12 @@
 package com.astro.SmiteSolver.object;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
 
 @Entity
+@Table(name="update_data")
 public class UpdateData implements Serializable {
-
-    @Id
-    private Integer date;
 
     @Id
     private LocalDate updatedDate;
