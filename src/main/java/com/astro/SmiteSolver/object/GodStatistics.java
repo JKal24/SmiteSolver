@@ -1,9 +1,6 @@
 package com.astro.SmiteSolver.object;
 
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -16,22 +13,40 @@ public class GodStatistics {
 
     private String godName;
 
-    private BigDecimal winRate;
+    private BigDecimal monthlyWinRate;
 
-    private BigDecimal pickRate;
+    private BigDecimal patchWinRate;
 
-    private BigDecimal banRate;
+    private BigDecimal monthlyPickRate;
+
+    private BigDecimal patchPickRate;
+
+    private BigDecimal monthlyBanRate;
+
+    private BigDecimal patchBanRate;
 
     @ElementCollection
-    private List<String> recommendedItems;
+//    @MapKeyColumn(name="items_high_mmr")
+//    @Column(name="item_high_mrr_id")
+//    @CollectionTable(name="popular_items_high_mmr", joinColumns=@JoinColumn(name="popular_items_high_mmr_id"))
+    private List<String> monthlyRecommendedItems;
 
-    public GodStatistics(Integer godID, String godName, BigDecimal winRate, BigDecimal pickRate, BigDecimal banRate, List<String> recommendedItems) {
-        this.godID = godID;
+    @ElementCollection
+//    @MapKeyColumn(name="patch_recommended_items")
+//    @Column(name="patch_recommended_items_id")
+//    @CollectionTable(name="god_patch_recommended_items", joinColumns=@JoinColumn(name="patch_recommended_items_id"))
+    private List<String> patchRecommendedItems;
+
+    public GodStatistics(String godName, BigDecimal monthlyWinRate, BigDecimal patchWinRate, BigDecimal monthlyPickRate,
+                         BigDecimal patchPickRate, BigDecimal monthlyBanRate, BigDecimal patchBanRate, List<String> monthlyRecommendedItems) {
         this.godName = godName;
-        this.winRate = winRate;
-        this.pickRate = pickRate;
-        this.banRate = banRate;
-        this.recommendedItems = recommendedItems;
+        this.monthlyWinRate = monthlyWinRate;
+        this.patchWinRate = patchWinRate;
+        this.monthlyPickRate = monthlyPickRate;
+        this.patchPickRate = patchPickRate;
+        this.monthlyBanRate = monthlyBanRate;
+        this.patchBanRate = patchBanRate;
+        this.monthlyRecommendedItems = monthlyRecommendedItems;
     }
 
     public GodStatistics() { }
@@ -52,35 +67,67 @@ public class GodStatistics {
         this.godName = godName;
     }
 
-    public BigDecimal getWinRate() {
-        return winRate;
+    public BigDecimal getMonthlyWinRate() {
+        return monthlyWinRate;
     }
 
-    public void setWinRate(BigDecimal winRate) {
-        this.winRate = winRate;
+    public void setMonthlyWinRate(BigDecimal monthlyWinRate) {
+        this.monthlyWinRate = monthlyWinRate;
     }
 
-    public BigDecimal getPickRate() {
-        return pickRate;
+    public BigDecimal getPatchWinRate() {
+        return patchWinRate;
     }
 
-    public void setPickRate(BigDecimal pickRate) {
-        this.pickRate = pickRate;
+    public void setPatchWinRate(BigDecimal patchWinRate) {
+        this.patchWinRate = patchWinRate;
     }
 
-    public BigDecimal getBanRate() {
-        return banRate;
+    public BigDecimal getMonthlyPickRate() {
+        return monthlyPickRate;
     }
 
-    public void setBanRate(BigDecimal banRate) {
-        this.banRate = banRate;
+    public void setMonthlyPickRate(BigDecimal monthlyPickRate) {
+        this.monthlyPickRate = monthlyPickRate;
     }
 
-    public List<String> getRecommendedItems() {
-        return recommendedItems;
+    public BigDecimal getPatchPickRate() {
+        return patchPickRate;
     }
 
-    public void setRecommendedItems(List<String> recommendedItems) {
-        this.recommendedItems = recommendedItems;
+    public void setPatchPickRate(BigDecimal patchPickRate) {
+        this.patchPickRate = patchPickRate;
+    }
+
+    public BigDecimal getMonthlyBanRate() {
+        return monthlyBanRate;
+    }
+
+    public void setMonthlyBanRate(BigDecimal monthlyBanRate) {
+        this.monthlyBanRate = monthlyBanRate;
+    }
+
+    public BigDecimal getPatchBanRate() {
+        return patchBanRate;
+    }
+
+    public void setPatchBanRate(BigDecimal patchBanRate) {
+        this.patchBanRate = patchBanRate;
+    }
+
+    public List<String> getMonthlyRecommendedItems() {
+        return monthlyRecommendedItems;
+    }
+
+    public void setMonthlyRecommendedItems(List<String> monthlyRecommendedItems) {
+        this.monthlyRecommendedItems = monthlyRecommendedItems;
+    }
+
+    public List<String> getPatchRecommendedItems() {
+        return patchRecommendedItems;
+    }
+
+    public void setPatchRecommendedItems(List<String> patchRecommendedItems) {
+        this.patchRecommendedItems = patchRecommendedItems;
     }
 }

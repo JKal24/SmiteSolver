@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
@@ -23,6 +25,21 @@ public class UpdateService {
         data.setUpdatedDate(date);
         data.setVersion(version);
         updateRepository.save(data);
+    }
+
+    public List<LocalDate> getUpdatableDates() {
+        LocalDate date = LocalDate.ofInstant(Instant.now(), ZoneId.of("UTC"));
+        List<LocalDate> updatableDates = new ArrayList<>();
+
+        for (int parseDates = 1; parseDates <= DATA_DELETION_DAY_LIMIT; parseDates++) {
+            LocalDate prevDate = date.minusDays(parseDates);
+            if(updateRepository.findById(prevDate).isEmpty()) {
+                updatableDates.add(prevDate);
+            } else {
+                return updatableDates;
+            }
+        }
+        return updatableDates;
     }
 
     public boolean isUpdatableDate() {

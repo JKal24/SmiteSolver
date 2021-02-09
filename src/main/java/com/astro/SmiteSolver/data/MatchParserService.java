@@ -1,7 +1,6 @@
 package com.astro.SmiteSolver.data;
 
 import com.astro.SmiteSolver.repository.GodNamesRepository;
-import com.astro.SmiteSolver.repository.UpdateRepository;
 import com.astro.smitebasic.api.SmiteAPI;
 import com.astro.smitebasic.api.Utils;
 import com.astro.smitebasic.objects.gamedata.matches.MatchInfo;
@@ -10,19 +9,17 @@ import com.astro.smitebasic.objects.player.matches.PlayerMatchData;
 import com.astro.smitebasic.utils.Mode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 @Service
-@EnableJpaRepositories("com.astro.smitebasic.objects.session")
-@ComponentScan({"com.astro.smitebasic.api", "com.astro.smitebasic.objects.session"})
 public class MatchParserService {
 
     @Value("${smite.api}")
@@ -38,10 +35,10 @@ public class MatchParserService {
     private SmiteAPI api;
 
     @Autowired
-    private UpdateRepository updateRepository;
+    private UpdateService updateService;
 
     @Autowired
-    private GodDataService godDataService;
+    private DataService dataService;
 
     @Autowired
     private GodNamesRepository godNamesRepository;
@@ -52,47 +49,64 @@ public class MatchParserService {
     }
 
     public void updateData() {
-        updateRepository.findAll().forEach(data -> {
+        updateService.getUpdatableDates().forEach(data -> {
+            for(int parseHours = 0; parseHours < 24; parseHours++) {
+                Integer[] matchIDs = Arrays.stream(api.getMatchIDs(Mode.CONQUEST_LEAGUE.getModeID(), parseHours))
+                        .map(MatchInfo::getMatchID)
+                        .toArray(Integer[]::new);
+                MultiMatchInfo multiMatchInfo = api.getMultipleMatchData(matchIDs);
 
-            if(isUpdatableDate(data.getUpdatedDate())) {
+                multiMatchInfo.getPlayerMatchDataList().forEach((matchID, matchInfo) -> {
 
-                LocalDate date = LocalDate.ofInstant(Instant.now(), ZoneId.of("UTC"));
+                    List<Float> averageMMR = new ArrayList<>();
 
-                for(int parseHours = 0; parseHours < 24; parseHours++) {
-                    Integer[] matchIDs = Arrays.stream(api.getMatchIDs(Mode.CONQUEST_LEAGUE.getModeID(), parseHours))
-                            .map(MatchInfo::getMatchID)
-                            .toArray(Integer[]::new);
-                    MultiMatchInfo multiMatchInfo = api.getMultipleMatchData(matchIDs);
+                    for (PlayerMatchData playerMatchData : matchInfo) {
+                        dataService.configureGodData(playerMatchData.getRankStatConquest(), playerMatchData.getGodID(),
+                                getPlayerItems(playerMatchData), getPlayerActives(playerMatchData),
+                                getWinStatus(playerMatchData.getSideSelection(), playerMatchData.getWinningSide()),
+                                playerMatchData.getDamagePlayer(), playerMatchData.getBasicAttackDamage(), playerMatchData.getDamageMitigated());
 
-                    multiMatchInfo.getPlayerMatchDataList().forEach((matchID, matchInfo) -> {
+                        averageMMR.add(playerMatchData.getRankStatConquest());
+                    }
 
-                        for(int parseMatch = 0; parseMatch < matchInfo.length; parseMatch++) {
-                            PlayerMatchData playerMatchData = matchInfo[parseMatch];
+                    // Replace bans list with a map for all matched matchID data...
+                    dataService.configureMatchData(getMMRAverage(averageMMR), getBannedGodIDs(matchInfo[0]));
 
-
-                        }
-
-                    });
-                    // Insert all data from multiMatchInfo
-                }
-
+                });
+                // Insert all data from multiMatchInfo
             }
-
         });
     }
 
     public void updateVersion() {
-        updateRepository.findAll().forEach(data -> {
-
-            String versionString = Utils.parseSingleEntry(api.getPatchInfo()).getVersion_string();
-            if(Float.parseFloat(versionString) != data.getVersion()) {
-                // Update entire database, look for new gods, reset win rate data, etc.
-            }
-        });
+        String versionString = Utils.parseSingleEntry(api.getPatchInfo()).getVersion_string();
     }
 
     private boolean isUpdatableDate(LocalDate prevDate) {
         LocalDate currentDate = LocalDate.ofInstant(Instant.now(), ZoneId.of("UTC"));
         return currentDate.minusDays(1).isAfter(prevDate);
+    }
+
+    private List<String> getPlayerItems(PlayerMatchData data) {
+        return Arrays.asList(data.getItemPurch1(), data.getItemPurch2(), data.getItemPurch3(),
+                data.getItemPurch4(), data.getItemPurch5(), data.getItemPurch6());
+    }
+
+    private List<String> getPlayerActives(PlayerMatchData data) {
+        return Arrays.asList(data.getItemActive1(), data.getItemActive2());
+    }
+
+    private List<Integer> getBannedGodIDs(PlayerMatchData data) {
+        return Arrays.asList(data.getBan1ID(), data.getBan2ID(), data.getBan3ID(), data.getBan4ID(), data.getBan5ID(),
+                data.getBan6ID(), data.getBan7ID(), data.getBan8ID(), data.getBan9ID(), data.getBan10ID());
+    }
+
+    // Win represents 1, a loss represents 0
+    private Integer getWinStatus(Integer taskForce, Integer winningTaskForce) {
+        return taskForce == winningTaskForce ? 1 : 0;
+    }
+
+    private Float getMMRAverage(List<Float> averageMMR) {
+        return averageMMR.stream().reduce(0.0F, (mmr1, mmr2) -> mmr1 + mmr2) / averageMMR.size();
     }
 }
