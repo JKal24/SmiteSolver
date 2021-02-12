@@ -1,4 +1,4 @@
-package com.astro.SmiteSolver.data;
+package com.astro.SmiteSolver.service;
 
 import com.astro.SmiteSolver.repository.GodNamesRepository;
 import com.astro.smitebasic.api.SmiteAPI;
@@ -15,9 +15,7 @@ import javax.annotation.PostConstruct;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class MatchParserService {
@@ -69,6 +67,7 @@ public class MatchParserService {
                         averageMMR.add(playerMatchData.getRankStatConquest());
                     }
 
+                    dataService.recordMMR(getMMRAverage(averageMMR));
                     // Replace bans list with a map for all matched matchID data...
                     dataService.configureMatchData(getMMRAverage(averageMMR), getBannedGodIDs(matchInfo[0]));
 
@@ -93,7 +92,7 @@ public class MatchParserService {
     }
 
     private List<String> getPlayerActives(PlayerMatchData data) {
-        return Arrays.asList(data.getItemActive1(), data.getItemActive2());
+        return Arrays.asList(data.getItemActive1(), data.getItemActive2(), data.getItemActive3(), data.getItemActive4());
     }
 
     private List<Integer> getBannedGodIDs(PlayerMatchData data) {
@@ -103,10 +102,10 @@ public class MatchParserService {
 
     // Win represents 1, a loss represents 0
     private Integer getWinStatus(Integer taskForce, Integer winningTaskForce) {
-        return taskForce == winningTaskForce ? 1 : 0;
+        return taskForce.equals(winningTaskForce) ? 1 : 0;
     }
 
     private Float getMMRAverage(List<Float> averageMMR) {
-        return averageMMR.stream().reduce(0.0F, (mmr1, mmr2) -> mmr1 + mmr2) / averageMMR.size();
+        return averageMMR.stream().reduce(0.0F, Float::sum) / averageMMR.size();
     }
 }

@@ -1,7 +1,7 @@
 package com.astro.SmiteSolver;
 
-import com.astro.SmiteSolver.data.MatchParserService;
-import com.astro.SmiteSolver.data.UpdateService;
+import com.astro.SmiteSolver.service.MatchParserService;
+import com.astro.SmiteSolver.service.UpdateService;
 import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

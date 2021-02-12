@@ -1,6 +1,6 @@
 package com.astro.SmiteSolver.repository;
 
-import com.astro.SmiteSolver.object.GodNames;
+import com.astro.SmiteSolver.object.God.GodNames;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 

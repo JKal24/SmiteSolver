@@ -6,7 +6,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "god_statistics")
-public class GodStatistics {
+public class PerformanceData {
 
     @Id
     private Integer godID;
@@ -37,8 +37,8 @@ public class GodStatistics {
 //    @CollectionTable(name="god_patch_recommended_items", joinColumns=@JoinColumn(name="patch_recommended_items_id"))
     private List<String> patchRecommendedItems;
 
-    public GodStatistics(String godName, BigDecimal monthlyWinRate, BigDecimal patchWinRate, BigDecimal monthlyPickRate,
-                         BigDecimal patchPickRate, BigDecimal monthlyBanRate, BigDecimal patchBanRate, List<String> monthlyRecommendedItems) {
+    public PerformanceData(String godName, BigDecimal monthlyWinRate, BigDecimal patchWinRate, BigDecimal monthlyPickRate,
+                           BigDecimal patchPickRate, BigDecimal monthlyBanRate, BigDecimal patchBanRate, List<String> monthlyRecommendedItems) {
         this.godName = godName;
         this.monthlyWinRate = monthlyWinRate;
         this.patchWinRate = patchWinRate;
@@ -49,7 +49,7 @@ public class GodStatistics {
         this.monthlyRecommendedItems = monthlyRecommendedItems;
     }
 
-    public GodStatistics() { }
+    public PerformanceData() { }
 
     public Integer getGodID() {
         return godID;

@@ -1,4 +1,4 @@
-package com.astro.SmiteSolver.data;
+package com.astro.SmiteSolver.service;
 
 import com.astro.SmiteSolver.object.UpdateData;
 import com.astro.SmiteSolver.repository.UpdateRepository;
