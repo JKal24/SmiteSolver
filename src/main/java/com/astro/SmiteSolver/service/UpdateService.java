@@ -1,6 +1,6 @@
 package com.astro.SmiteSolver.service;
 
-import com.astro.SmiteSolver.object.UpdateData;
+import com.astro.SmiteSolver.entity.UpdateData;
 import com.astro.SmiteSolver.repository.UpdateRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

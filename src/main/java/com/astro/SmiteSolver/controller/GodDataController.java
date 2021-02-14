@@ -1,7 +1,7 @@
 package com.astro.SmiteSolver.controller;
 
-import com.astro.SmiteSolver.object.PerformanceData;
-import com.astro.SmiteSolver.object.God.GodNames;
+import com.astro.SmiteSolver.entity.PerformanceDataHighMMR;
+import com.astro.SmiteSolver.entity.God.GodNames;
 import com.astro.SmiteSolver.repository.PerformanceDataRepository;
 import com.astro.SmiteSolver.repository.GodNamesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +26,7 @@ public class GodDataController {
 
     @GetMapping("/statistics/{god}")
     public @ResponseBody
-    PerformanceData getGodStatistics(@PathVariable String godName) {
+    PerformanceDataHighMMR getGodStatistics(@PathVariable String godName) {
         for (GodNames godNames : godNamesRepository.findAll()) {
             if (godNames.getGodName().equals(godName)) {
                 return performanceDataRepository.findById(godNames.getGodID()).get();

@@ -1,4 +1,4 @@
-package com.astro.SmiteSolver.object;
+package com.astro.SmiteSolver.entity;
 
 import javax.persistence.*;
 import java.io.Serializable;

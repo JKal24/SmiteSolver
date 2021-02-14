@@ -1,5 +1,7 @@
 package com.astro.SmiteSolver.service;
 
+import com.astro.SmiteSolver.entity.God.GodDataLowMMR;
+import com.astro.SmiteSolver.repository.LowMMRGodDataRepository;
 import com.astro.SmiteSolver.repository.GodNamesRepository;
 import com.astro.smitebasic.api.SmiteAPI;
 import com.astro.smitebasic.api.Utils;
@@ -18,7 +20,7 @@ import java.time.ZoneId;
 import java.util.*;
 
 @Service
-public class MatchParserService {
+public class PerformanceDataService {
 
     @Value("${smite.api}")
     private String apiUri;
@@ -39,6 +41,9 @@ public class MatchParserService {
     private DataService dataService;
 
     @Autowired
+    private LowMMRGodDataRepository lowMMRGodDataRepository;
+
+    @Autowired
     private GodNamesRepository godNamesRepository;
 
     @PostConstruct
@@ -47,9 +52,11 @@ public class MatchParserService {
     }
 
     public void updateData() {
-        updateService.getUpdatableDates().forEach(data -> {
+        updateService.getUpdatableDates().forEach(date -> {
+            Map<Integer, GodDataLowMMR> godDataMap = new HashMap<>();
+
             for(int parseHours = 0; parseHours < 24; parseHours++) {
-                Integer[] matchIDs = Arrays.stream(api.getMatchIDs(Mode.CONQUEST_LEAGUE.getModeID(), parseHours))
+                Integer[] matchIDs = Arrays.stream(api.getMatchIDs(Mode.CONQUEST_LEAGUE.getModeID(), date, parseHours))
                         .map(MatchInfo::getMatchID)
                         .toArray(Integer[]::new);
                 MultiMatchInfo multiMatchInfo = api.getMultipleMatchData(matchIDs);
@@ -59,7 +66,15 @@ public class MatchParserService {
                     List<Float> averageMMR = new ArrayList<>();
 
                     for (PlayerMatchData playerMatchData : matchInfo) {
-                        dataService.configureGodData(playerMatchData.getRankStatConquest(), playerMatchData.getGodID(),
+
+                        Integer key = makeDataID(date, playerMatchData.getGodID());
+                        if (godDataMap.containsKey(key)) {
+                            godDataMap.put(key, configureGodData(playerMatchData, godDataMap.get(key)));
+                        } else {
+                            godDataMap.put(key, configureGodData(playerMatchData, new GodDataLowMMR()));
+                        }
+
+                        dataService.configureGodData(playerMatchData.getRankStatConquest(), playerMatchData.getGodID(), date,
                                 getPlayerItems(playerMatchData), getPlayerActives(playerMatchData),
                                 getWinStatus(playerMatchData.getSideSelection(), playerMatchData.getWinningSide()),
                                 playerMatchData.getDamagePlayer(), playerMatchData.getBasicAttackDamage(), playerMatchData.getDamageMitigated());
@@ -77,6 +92,55 @@ public class MatchParserService {
         });
     }
 
+    public GodDataLowMMR configureGodData(PlayerMatchData playerMatchData, GodDataLowMMR data) {
+        if (getWinStatus(playerMatchData.getSideSelection(), playerMatchData.getWinningSide()) == 1) {
+            incrementWins(data);
+        }
+        incrementMatchesPlayed(data);
+        return new GodDataLowMMR();
+    }
+
+    public GodDataLowMMR configureBanData(List<Integer> bannedGodIDs) {
+
+    }
+
+    /**
+     * @param data is a data piece created by parsing through matches obtained from the Smite API
+     * @return the same data piece but with incremented data
+     */
+
+    // Will create an interface which encompasses both GodData entities
+
+    public GodDataLowMMR incrementMatchesPlayed(GodDataLowMMR data) {
+        data.setMatchesPlayed(data.getMatchesPlayed() + 1);
+        return data;
+    }
+
+    public GodDataLowMMR incrementWins(GodDataLowMMR data) {
+        data.setWins(data.getWins() + 1);
+        return data;
+    }
+
+    public GodDataLowMMR incrementBans(GodDataLowMMR data) {
+        return data;
+    }
+
+    public GodDataLowMMR addSkins(GodDataLowMMR data, List<String> playerSkins) {
+        return data;
+    }
+
+    public GodDataLowMMR addItems(GodDataLowMMR data, List<String> playerItems) {
+        return data;
+    }
+
+    public GodDataLowMMR addActives(GodDataLowMMR data, List<String> playerActives) {
+        return data;
+    }
+
+    public GodDataLowMMR addDamageStats(GodDataLowMMR data, Integer damageDone, Integer basicAttackDamageDone, Integer damageMitigated) {
+        return data;
+    }
+
     public void updateVersion() {
         String versionString = Utils.parseSingleEntry(api.getPatchInfo()).getVersion_string();
     }
@@ -84,6 +148,10 @@ public class MatchParserService {
     private boolean isUpdatableDate(LocalDate prevDate) {
         LocalDate currentDate = LocalDate.ofInstant(Instant.now(), ZoneId.of("UTC"));
         return currentDate.minusDays(1).isAfter(prevDate);
+    }
+
+    public Integer makeDataID(LocalDate date, Integer godID) {
+        return date.getDayOfMonth() + date.getMonthValue() + date.getYear() + godID;
     }
 
     private List<String> getPlayerItems(PlayerMatchData data) {
