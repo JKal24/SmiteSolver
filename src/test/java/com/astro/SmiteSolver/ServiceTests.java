@@ -1,6 +1,6 @@
 package com.astro.SmiteSolver;
 
-import com.astro.SmiteSolver.service.PerformanceDataService;
+import com.astro.SmiteSolver.service.MatchParserService;
 import com.astro.SmiteSolver.service.UpdateService;
 import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.Test;
@@ -18,7 +18,7 @@ public class ServiceTests {
     private UpdateService updateService;
 
     @Autowired
-    private PerformanceDataService performanceDataService;
+    private MatchParserService matchParserService;
 
     // Used to test update service before it went live
 

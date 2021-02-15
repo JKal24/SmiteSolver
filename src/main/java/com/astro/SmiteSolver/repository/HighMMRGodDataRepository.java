@@ -1,7 +1,8 @@
 package com.astro.SmiteSolver.repository;
 
 import com.astro.SmiteSolver.entity.God.GodDataHighMMR;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
 
-public interface HighMMRGodDataRepository extends CrudRepository<GodDataHighMMR, Integer> {
+@Repository
+public interface HighMMRGodDataRepository extends GodDataRepository<GodDataHighMMR, Integer> {
 }
