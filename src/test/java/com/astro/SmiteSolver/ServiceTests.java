@@ -28,8 +28,6 @@ public class ServiceTests {
         updateService.addUpdate(LocalDate.ofInstant(Instant.now(), ZoneId.of("UTC")).minusDays(6), 7.15);
         updateService.addUpdate(LocalDate.ofInstant(Instant.now(), ZoneId.of("UTC")).minusDays(9), 7.14);
 
-        assertThat(updateService.isUpdatableDate()).isNotEqualTo(false);
-
         updateService.cleanUpdates();
         assertThat(updateService.getDaysStored()).isEqualTo(3);
     }

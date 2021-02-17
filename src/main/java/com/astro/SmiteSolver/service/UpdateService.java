@@ -2,6 +2,7 @@ package com.astro.SmiteSolver.service;
 
 import com.astro.SmiteSolver.entity.UpdateData;
 import com.astro.SmiteSolver.repository.UpdateRepository;
+import org.hibernate.sql.Update;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -10,6 +11,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
@@ -20,10 +22,15 @@ public class UpdateService {
     @Autowired
     private UpdateRepository updateRepository;
 
-    public void addUpdate(LocalDate date, Double version) {
+    public UpdateData getUpdateData(LocalDate date) {
+        Optional<UpdateData> data = updateRepository.findById(date);
+        return data.orElse(null);
+    }
+
+    public void addUpdate(LocalDate date, Double versionID) {
         UpdateData data = new UpdateData();
         data.setUpdatedDate(date);
-        data.setVersion(version);
+        data.setVersion(versionID);
         updateRepository.save(data);
     }
 
@@ -42,9 +49,22 @@ public class UpdateService {
         return updatableDates;
     }
 
-    public boolean isUpdatableDate() {
-        LocalDate date = getComparableDate(1);
-        return updateRepository.findById(date).isEmpty();
+    public boolean hasBeenUpdatedToday() {
+        LocalDate dateToday = getComparableDate(0);
+        return updateRepository.findById(dateToday).isPresent();
+    }
+
+    public boolean isUpdatableDate(double versionID) {
+        LocalDate dateToday = getComparableDate(0);
+
+        for (int parseDates = 1; parseDates < DATA_DELETION_DAY_LIMIT; parseDates++) {
+            LocalDate prevDay = dateToday.minusDays(parseDates);
+            Optional<UpdateData> data = updateRepository.findById(prevDay);
+            if (data.isPresent()) {
+                return data.get().getVersion() == versionID;
+            }
+        }
+        return false;
     }
 
     public void cleanUpdates() {

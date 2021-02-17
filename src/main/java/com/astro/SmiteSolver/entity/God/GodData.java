@@ -17,6 +17,8 @@ public class GodData {
 
     private Integer godID;
 
+    private String godName;
+
     private Integer matchesPlayed;
 
     private Integer wins;
@@ -41,11 +43,12 @@ public class GodData {
     @ElementCollection
     private List<Integer> damageMitigated;
 
-    public GodData(LocalDate date, Integer godID, Integer matchesPlayed, Integer wins, Integer bans,
+    public GodData(LocalDate date, Integer godID, String godName, Integer matchesPlayed, Integer wins, Integer bans,
                    Map<String, Integer> skinsUsed, Map<String, Integer> popularItems, Map<String, Integer> popularActives,
                    List<Integer> damageDone, List<Integer> basicAttackDamage, List<Integer> damageMitigated) {
         this.dataID = date.getDayOfMonth() + date.getMonthValue() + date.getYear() + godID;
         this.godID = godID;
+        this.godName = godName;
         this.matchesPlayed = matchesPlayed;
         this.wins = wins;
         this.bans = bans;
@@ -71,6 +74,14 @@ public class GodData {
 
     public void setGodID(Integer godID) {
         this.godID = godID;
+    }
+
+    public String getGodName() {
+        return godName;
+    }
+
+    public void setGodName(String godName) {
+        this.godName = godName;
     }
 
     public Integer getMatchesPlayed() {

@@ -13,6 +13,11 @@ public class GodNames {
 
     private String godName;
 
+    public GodNames(Integer godID, String godName) {
+        this.godID = godID;
+        this.godName = godName;
+    }
+
     public Integer getGodID() {
         return godID;
     }

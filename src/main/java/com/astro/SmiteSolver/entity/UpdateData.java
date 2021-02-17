@@ -9,16 +9,16 @@ import java.time.LocalDate;
 public class UpdateData implements Serializable {
 
     @Id
-    private LocalDate updatedDate;
+    private LocalDate date;
 
     private Double version;
 
     public LocalDate getUpdatedDate() {
-        return updatedDate;
+        return date;
     }
 
     public void setUpdatedDate(LocalDate updatedDate) {
-        this.updatedDate = updatedDate;
+        this.date = updatedDate;
     }
 
     public Double getVersion() {
