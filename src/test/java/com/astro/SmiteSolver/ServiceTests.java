@@ -1,6 +1,7 @@
 package com.astro.SmiteSolver;
 
 import com.astro.SmiteSolver.service.MatchParserService;
+import com.astro.SmiteSolver.service.PerformanceDataService;
 import com.astro.SmiteSolver.service.UpdateService;
 import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.Test;
@@ -20,6 +21,9 @@ public class ServiceTests {
     @Autowired
     private MatchParserService matchParserService;
 
+    @Autowired
+    private PerformanceDataService performanceDataService;
+
     // Used to test update service before it went live
 
     @Test
@@ -30,6 +34,11 @@ public class ServiceTests {
 
         updateService.cleanUpdates();
         assertThat(updateService.getDaysStored()).isEqualTo(3);
+    }
+
+    @Test
+    public void matchTest() {
+
     }
 
 }

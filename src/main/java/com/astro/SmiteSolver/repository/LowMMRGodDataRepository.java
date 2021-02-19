@@ -1,6 +1,6 @@
 package com.astro.SmiteSolver.repository;
 
-import com.astro.SmiteSolver.entity.God.GodDataLowMMR;
+import com.astro.SmiteSolver.entity.GodDataLowMMR;
 import org.springframework.stereotype.Repository;
 
 @Repository

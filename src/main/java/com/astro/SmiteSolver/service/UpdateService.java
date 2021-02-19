@@ -29,7 +29,7 @@ public class UpdateService {
 
     public void addUpdate(LocalDate date, Double versionID) {
         UpdateData data = new UpdateData();
-        data.setUpdatedDate(date);
+        data.setDate(date);
         data.setVersion(versionID);
         updateRepository.save(data);
     }
@@ -71,7 +71,7 @@ public class UpdateService {
         LocalDate comparableDate = getComparableDate(DATA_DELETION_DAY_LIMIT);
 
         for (UpdateData data : updateRepository.findAll()) {
-            if (comparableDate.isAfter(data.getUpdatedDate())) {
+            if (comparableDate.isAfter(data.getDate())) {
                 updateRepository.delete(data);
             }
         }

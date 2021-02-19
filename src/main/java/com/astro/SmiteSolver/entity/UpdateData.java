@@ -2,10 +2,11 @@ package com.astro.SmiteSolver.entity;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
 
-@Entity
-@Table(name="update_data")
+@Entity(name="update_data")
 public class UpdateData implements Serializable {
 
     @Id
@@ -13,12 +14,21 @@ public class UpdateData implements Serializable {
 
     private Double version;
 
-    public LocalDate getUpdatedDate() {
+    public UpdateData() {
+        this(LocalDate.ofInstant(Instant.now(), ZoneId.of("UTC")), 0.0);
+    }
+
+    public UpdateData(LocalDate date, Double version) {
+        this.date = date;
+        this.version = version;
+    }
+
+    public LocalDate getDate() {
         return date;
     }
 
-    public void setUpdatedDate(LocalDate updatedDate) {
-        this.date = updatedDate;
+    public void setDate(LocalDate date) {
+        this.date = date;
     }
 
     public Double getVersion() {

@@ -5,8 +5,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
-@Entity
-@Table(name = "god_statistics_high_mmr")
+@Entity(name = "god_statistics_high_mmr")
 public class PerformanceDataHighMMR {
 
     @Id

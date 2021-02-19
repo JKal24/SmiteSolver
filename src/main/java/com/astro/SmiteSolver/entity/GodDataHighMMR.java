@@ -1,14 +1,14 @@
-package com.astro.SmiteSolver.entity.God;
+package com.astro.SmiteSolver.entity;
 
 import javax.persistence.Entity;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-@Entity(name="god_data_low_mmr")
-public class GodDataLowMMR extends GodData {
+@Entity(name="god_data_high_mmr")
+public class GodDataHighMMR extends GodData {
 
-    public GodDataLowMMR(LocalDate date, Integer godID, String godName) {
+    public GodDataHighMMR(LocalDate date, Integer godID, String godName) {
         super(date, godID, godName, 0, 0, 0, new HashMap<>(), new HashMap<>(),
                 new HashMap<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
     }

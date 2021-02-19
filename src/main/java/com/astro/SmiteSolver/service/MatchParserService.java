@@ -1,10 +1,9 @@
 package com.astro.SmiteSolver.service;
 
-import com.astro.SmiteSolver.entity.God.GodData;
-import com.astro.SmiteSolver.entity.God.GodDataHighMMR;
-import com.astro.SmiteSolver.entity.God.GodDataLowMMR;
-import com.astro.SmiteSolver.entity.God.GodNames;
-import com.astro.SmiteSolver.entity.UpdateData;
+import com.astro.SmiteSolver.entity.GodData;
+import com.astro.SmiteSolver.entity.GodDataHighMMR;
+import com.astro.SmiteSolver.entity.GodDataLowMMR;
+import com.astro.SmiteSolver.entity.GodNames;
 import com.astro.SmiteSolver.repository.GodNamesRepository;
 import com.astro.smitebasic.api.SmiteAPI;
 import com.astro.smitebasic.api.Utils;
@@ -23,7 +22,6 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 public class MatchParserService {
@@ -64,12 +62,7 @@ public class MatchParserService {
             int matchCount = 0;
 
             for(int parseHours = 0; parseHours < 24; parseHours++) {
-                Integer[] matchIDs = Arrays.stream(api.getMatchIDs(Mode.CONQUEST_LEAGUE.getModeID(), date, parseHours))
-                        .map(MatchInfo::getMatchID)
-                        .toArray(Integer[]::new);
-                MultiMatchInfo multiMatchInfo = api.getMultipleMatchData(matchIDs);
-
-                for (Map.Entry<Integer, PlayerMatchData[]> matchDataEntry : multiMatchInfo.getPlayerMatchDataList().entrySet()) {
+                for (Map.Entry<Integer, PlayerMatchData[]> matchDataEntry : getDailyMultiMatchData(date, parseHours).entrySet()) {
                     PlayerMatchData[] matchInfo = matchDataEntry.getValue();
 
                     List<Float> averageMMRList = new ArrayList<>();
@@ -96,7 +89,6 @@ public class MatchParserService {
 
                             }
                         }
-
                         averageMMRList.add(playerMatchData.getRankStatConquest());
                     }
 
@@ -125,8 +117,15 @@ public class MatchParserService {
             }
             performanceDataService.configureHighMMRGodData(godDataHighMMRMap);
             performanceDataService.configureLowMMRGodData(godDataLowMMRMap);
-            performanceDataService.configureMatchData(matchCount);
+            performanceDataService.configureMatchData(date, matchCount);
         });
+    }
+
+    public Map<Integer, PlayerMatchData[]> getDailyMultiMatchData(LocalDate date, int hour) {
+        Integer[] matchIDs = Arrays.stream(api.getMatchIDs(Mode.CONQUEST_LEAGUE.getModeID(), date, hour))
+                .map(MatchInfo::getMatchID)
+                .toArray(Integer[]::new);
+        return api.getMultipleMatchData(matchIDs).getPlayerMatchDataList();
     }
 
     public void checkForPatchUpdates() {

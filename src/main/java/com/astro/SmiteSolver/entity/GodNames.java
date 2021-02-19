@@ -1,4 +1,4 @@
-package com.astro.SmiteSolver.entity.God;
+package com.astro.SmiteSolver.entity;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
