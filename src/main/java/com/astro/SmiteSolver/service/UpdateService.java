@@ -1,5 +1,6 @@
 package com.astro.SmiteSolver.service;
 
+import com.astro.SmiteSolver.config.utils;
 import com.astro.SmiteSolver.entity.UpdateData;
 import com.astro.SmiteSolver.repository.UpdateRepository;
 import org.hibernate.sql.Update;
@@ -34,28 +35,26 @@ public class UpdateService {
         updateRepository.save(data);
     }
 
-    public List<LocalDate> getUpdatableDates() {
+    public LocalDate getUpdatableDate() {
         LocalDate date = LocalDate.ofInstant(Instant.now(), ZoneId.of("UTC"));
-        List<LocalDate> updatableDates = new ArrayList<>();
 
         for (int parseDates = 1; parseDates <= DATA_DELETION_DAY_LIMIT; parseDates++) {
             LocalDate prevDate = date.minusDays(parseDates);
             if(updateRepository.findById(prevDate).isEmpty()) {
-                updatableDates.add(prevDate);
-            } else {
-                return updatableDates;
+                return prevDate;
             }
         }
-        return updatableDates;
+
+        return null;
     }
 
     public boolean hasBeenUpdatedToday() {
-        LocalDate dateToday = getComparableDate(0);
+        LocalDate dateToday = utils.getComparableDate(0);
         return updateRepository.findById(dateToday).isPresent();
     }
 
-    public boolean isUpdatableDate(double versionID) {
-        LocalDate dateToday = getComparableDate(0);
+    public boolean isUpdatableVersion(double versionID) {
+        LocalDate dateToday = utils.getComparableDate(0);
 
         for (int parseDates = 1; parseDates < DATA_DELETION_DAY_LIMIT; parseDates++) {
             LocalDate prevDay = dateToday.minusDays(parseDates);
@@ -68,7 +67,7 @@ public class UpdateService {
     }
 
     public void cleanUpdates() {
-        LocalDate comparableDate = getComparableDate(DATA_DELETION_DAY_LIMIT);
+        LocalDate comparableDate = utils.getComparableDate(DATA_DELETION_DAY_LIMIT);
 
         for (UpdateData data : updateRepository.findAll()) {
             if (comparableDate.isAfter(data.getDate())) {
@@ -83,7 +82,4 @@ public class UpdateService {
         return size.get();
     }
 
-    private LocalDate getComparableDate(int daysBehind) {
-        return LocalDate.ofInstant(Instant.now(), ZoneId.of("UTC")).minusDays(daysBehind);
-    }
 }

@@ -5,14 +5,14 @@ import javax.persistence.Id;
 import java.time.LocalDate;
 
 @Entity(name = "match_data")
-public class MatchData {
+public class MatchRecordedData {
 
     @Id
     private LocalDate date;
 
     private Integer matchesPlayed;
 
-    public MatchData(LocalDate date, Integer matchesPlayed) {
+    public MatchRecordedData(LocalDate date, Integer matchesPlayed) {
         this.date = date;
         this.matchesPlayed = matchesPlayed;
     }

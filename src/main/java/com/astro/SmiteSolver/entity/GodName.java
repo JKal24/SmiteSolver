@@ -6,14 +6,14 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name="god_names")
-public class GodNames {
+public class GodName {
 
     @Id
     private Integer godID;
 
     private String godName;
 
-    public GodNames(Integer godID, String godName) {
+    public GodName(Integer godID, String godName) {
         this.godID = godID;
         this.godName = godName;
     }

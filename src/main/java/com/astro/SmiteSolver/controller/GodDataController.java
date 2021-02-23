@@ -1,10 +1,9 @@
 package com.astro.SmiteSolver.controller;
 
-import com.astro.SmiteSolver.entity.GodNames;
-import com.astro.SmiteSolver.entity.PerformanceDataLowMMR;
-import com.astro.SmiteSolver.repository.PerformanceHighMMRRepository;
-import com.astro.SmiteSolver.repository.PerformanceLowMMRRepository;
-import com.astro.SmiteSolver.repository.GodNamesRepository;
+import com.astro.SmiteSolver.entity.GodData;
+import com.astro.SmiteSolver.entity.GodName;
+import com.astro.SmiteSolver.repository.GodNameRepository;
+import com.astro.SmiteSolver.repository.GodPerformanceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,13 +14,10 @@ import org.springframework.web.bind.annotation.RestController;
 public class GodDataController {
 
     @Autowired
-    private PerformanceLowMMRRepository performanceLowMMRRepository;
+    private GodPerformanceRepository performanceRepository;
 
     @Autowired
-    private PerformanceHighMMRRepository performanceHighMMRRepository;
-
-    @Autowired
-    private GodNamesRepository godNamesRepository;
+    private GodNameRepository godNameRepository;
 
     @GetMapping("/buildMatchData")
     public void buildMatchData() {
@@ -30,10 +26,10 @@ public class GodDataController {
 
     @GetMapping("/statistics/{god}")
     public @ResponseBody
-    PerformanceDataLowMMR getGodStatistics(@PathVariable String godName) {
-        for (GodNames godNames : godNamesRepository.findAll()) {
+    GodData getGodStatistics(@PathVariable String godName) {
+        for (GodName godNames : godNameRepository.findAll()) {
             if (godNames.getGodName().equals(godName)) {
-                return performanceLowMMRRepository.findById(godNames.getGodID()).get();
+                return performanceRepository.findById(godNames.getGodID()).get();
             }
         }
         return null;

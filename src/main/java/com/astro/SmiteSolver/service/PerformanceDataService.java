@@ -1,11 +1,7 @@
 package com.astro.SmiteSolver.service;
 
-import com.astro.SmiteSolver.entity.GodDataHighMMR;
-import com.astro.SmiteSolver.entity.GodDataLowMMR;
-import com.astro.SmiteSolver.entity.MatchData;
-import com.astro.SmiteSolver.repository.HighMMRGodDataRepository;
-import com.astro.SmiteSolver.repository.LowMMRGodDataRepository;
-import com.astro.SmiteSolver.repository.MatchDataRepository;
+import com.astro.SmiteSolver.entity.*;
+import com.astro.SmiteSolver.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,28 +12,65 @@ import java.util.Map;
 public class PerformanceDataService {
 
     @Autowired
-    private LowMMRGodDataRepository lowMMRGodDataRepository;
+    private RecordedMatchRepository recordedMatchRepository;
 
     @Autowired
-    private HighMMRGodDataRepository highMMRGodDataRepository;
+    private DailyLowMMRDailyGodDataRepository dailyLowMMRGodDataRepository;
 
     @Autowired
-    private MatchDataRepository matchDataRepository;
+    private DailyHighMMRDailyGodDataRepository dailyHighMMRGodDataRepository;
 
-    public void configureHighMMRGodData(Map<Integer, GodDataHighMMR> data) {
-        for (GodDataHighMMR godDataHighMMR : data.values()) {
-            highMMRGodDataRepository.save(godDataHighMMR);
+    @Autowired
+    private GodPerformanceRepository performanceRepository;
+
+    @Autowired
+    private GodNameRepository godNameRepository;
+
+    public void compileHighMMRPerformanceData() {
+        for (GodName godName : godNameRepository.findAll()) {
+            for (DailyGodDataHighMMR godDataHighMMR : dailyHighMMRGodDataRepository.findByGodID(godName.getGodID())) {
+
+            }
         }
     }
 
-    public void configureLowMMRGodData(Map<Integer, GodDataLowMMR> data) {
-        for (GodDataLowMMR godDataLowMMR : data.values()) {
-            lowMMRGodDataRepository.save(godDataLowMMR);
+    public void compileLowMMRPerformanceData() {
+
+    }
+
+    public void compileGodData(Map<Integer, DailyGodDataHighMMR> highMMRMap, Map<Integer, DailyGodDataLowMMR> lowMMRMap) {
+        for (GodName godName : godNameRepository.findAll()) {
+            int godID = godName.getGodID();
+
+            DailyGodDataHighMMR dataHighMMR = highMMRMap.get(godID);
+            DailyGodDataLowMMR dataLowMMR = lowMMRMap.get(godID);
+
+            performanceRepository.findById(godID).ifPresentOrElse(godData -> {
+
+            }, () -> {
+
+            });
+        }
+    }
+
+    public void myData(GodData data, Map<Integer, DailyGodDataHighMMR> highMMRMap) {
+
+    }
+
+    public void configureHighMMRGodData(Map<Integer, DailyGodDataHighMMR> data) {
+        for (DailyGodDataHighMMR godDataHighMMR : data.values()) {
+            dailyHighMMRGodDataRepository.save(godDataHighMMR);
+        }
+    }
+
+    public void configureLowMMRGodData(Map<Integer, DailyGodDataLowMMR> data) {
+        for (DailyGodDataLowMMR godDataLowMMR : data.values()) {
+            dailyLowMMRGodDataRepository.save(godDataLowMMR);
         }
     }
 
     public void configureMatchData(LocalDate date, Integer matchesPlayed) {
-        matchDataRepository.save(new MatchData(date, matchesPlayed));
+        recordedMatchRepository.save(new MatchRecordedData(date, matchesPlayed));
     }
 
 }

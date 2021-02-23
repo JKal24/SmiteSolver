@@ -6,9 +6,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 @Entity(name="god_data_low_mmr")
-public class GodDataLowMMR extends GodData {
+public class DailyGodDataLowMMR extends DailyGodData {
 
-    public GodDataLowMMR(LocalDate date, Integer godID, String godName) {
+    public DailyGodDataLowMMR(LocalDate date, Integer godID, String godName) {
         super(date, godID, godName, 0, 0, 0, new HashMap<>(), new HashMap<>(),
                 new HashMap<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
     }
