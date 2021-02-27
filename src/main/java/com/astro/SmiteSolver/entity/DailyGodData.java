@@ -36,19 +36,16 @@ public class DailyGodData {
     @ElementCollection
     private Map<String, Integer> popularActives;
 
-    @ElementCollection
-    private List<Integer> damageDone;
+    private Integer averageDamageDone;
 
-    @ElementCollection
-    private List<Integer> basicAttackDamage;
+    private Integer averageBasicAttackDamage;
 
-    @ElementCollection
-    private List<Integer> damageMitigated;
+    private Integer averageDamageMitigated;
 
     public DailyGodData(LocalDate date, Integer godID, String godName, Integer matchesPlayed, Integer wins, Integer bans,
                         Map<String, Integer> skinsUsed, Map<String, Integer> popularItems, Map<String, Integer> popularActives,
-                        List<Integer> damageDone, List<Integer> basicAttackDamage, List<Integer> damageMitigated) {
-        this.dataID = date.getDayOfMonth() + date.getMonthValue() + date.getYear() + godID;
+                        Integer averageDamageDone, Integer averageBasicAttackDamage, Integer averageDamageMitigated) {
+        this.dataID = dataID;
         this.date = date;
         this.godID = godID;
         this.godName = godName;
@@ -58,9 +55,9 @@ public class DailyGodData {
         this.skinsUsed = skinsUsed;
         this.popularItems = popularItems;
         this.popularActives = popularActives;
-        this.damageDone = damageDone;
-        this.basicAttackDamage = basicAttackDamage;
-        this.damageMitigated = damageMitigated;
+        this.averageDamageDone = averageDamageDone;
+        this.averageBasicAttackDamage = averageBasicAttackDamage;
+        this.averageDamageMitigated = averageDamageMitigated;
     }
 
     public Integer getDataID() {
@@ -143,27 +140,27 @@ public class DailyGodData {
         this.popularActives = new HashMap<>(popularActives);
     }
 
-    public List<Integer> getDamageDone() {
-        return new ArrayList<>(damageDone);
+    public Integer getAverageDamageDone() {
+        return averageDamageDone;
     }
 
-    public void setDamageDone(List<Integer> damageDone) {
-        this.damageDone = new ArrayList<>(damageDone);
+    public void setAverageDamageDone(Integer averageDamageDone) {
+        this.averageDamageDone = averageDamageDone;
     }
 
-    public List<Integer> getBasicAttackDamage() {
-        return new ArrayList<>(basicAttackDamage);
+    public Integer getAverageBasicAttackDamage() {
+        return averageBasicAttackDamage;
     }
 
-    public void setBasicAttackDamage(List<Integer> basicAttackDamage) {
-        this.basicAttackDamage = new ArrayList<>(basicAttackDamage);
+    public void setAverageBasicAttackDamage(Integer averageBasicAttackDamage) {
+        this.averageBasicAttackDamage = averageBasicAttackDamage;
     }
 
-    public List<Integer> getDamageMitigated() {
-        return new ArrayList<>(damageMitigated);
+    public Integer getAverageDamageMitigated() {
+        return averageDamageMitigated;
     }
 
-    public void setDamageMitigated(List<Integer> damageMitigated) {
-        this.damageMitigated = new ArrayList<>(damageMitigated);
+    public void setAverageDamageMitigated(Integer averageDamageMitigated) {
+        this.averageDamageMitigated = averageDamageMitigated;
     }
 }

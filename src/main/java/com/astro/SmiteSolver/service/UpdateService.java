@@ -1,31 +1,37 @@
 package com.astro.SmiteSolver.service;
 
 import com.astro.SmiteSolver.config.utils;
+import com.astro.SmiteSolver.entity.GodName;
 import com.astro.SmiteSolver.entity.UpdateData;
+import com.astro.SmiteSolver.repository.GodNameRepository;
 import com.astro.SmiteSolver.repository.UpdateRepository;
-import org.hibernate.sql.Update;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 public class UpdateService {
 
-    private final int DATA_DELETION_DAY_LIMIT = 30;
+    public static final int DATA_DELETION_DAY_LIMIT = 30;
 
     @Autowired
     private UpdateRepository updateRepository;
 
+    @Autowired
+    private GodNameRepository godNameRepository;
+
     public UpdateData getUpdateData(LocalDate date) {
         Optional<UpdateData> data = updateRepository.findById(date);
         return data.orElse(null);
+    }
+
+    public void registerGod(Integer godID, String godName) {
+        godNameRepository.save(new GodName(godID, godName));
     }
 
     public void addUpdate(LocalDate date, Double versionID) {

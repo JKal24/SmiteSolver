@@ -54,6 +54,12 @@ public class MatchParserService {
 
     public void updateData() {
         boolean newVersionCheck = checkForPatchUpdates();
+        if (newVersionCheck) {
+            // Update god lists, patch win rates, etc.
+
+            compileGodList();
+        }
+
         LocalDate updateDate = updateService.getUpdatableDate();
 
         Map<Integer, DailyGodDataHighMMR> godDataHighMMRMap = new HashMap<>();
@@ -131,6 +137,14 @@ public class MatchParserService {
                 .map(MatchInfo::getMatchID)
                 .toArray(Integer[]::new);
         return api.getMultipleMatchData(matchIDs).getPlayerMatchDataList();
+    }
+
+    public void compileGodList() {
+        GodInfo[] godInfos = api.getGods(Language.ENGLISH.getLanguageID());
+
+        for (GodInfo godInfo : godInfos) {
+            updateService.registerGod(godInfo.getGodID(), godInfo.getName());
+        }
     }
 
     public boolean checkForPatchUpdates() {

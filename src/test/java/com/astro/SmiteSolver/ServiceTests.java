@@ -1,5 +1,7 @@
 package com.astro.SmiteSolver;
 
+import com.astro.SmiteSolver.entity.DailyGodDataHighMMR;
+import com.astro.SmiteSolver.entity.DailyGodDataLowMMR;
 import com.astro.SmiteSolver.repository.GodNameRepository;
 import com.astro.SmiteSolver.service.MatchParserService;
 import com.astro.SmiteSolver.service.PerformanceDataService;
@@ -39,6 +41,14 @@ public class ServiceTests {
 
         updateService.cleanUpdates();
         assertThat(updateService.getDaysStored()).isEqualTo(3);
+    }
+
+    public void GodDataTest() {
+        DailyGodDataHighMMR highMMRdata = new DailyGodDataHighMMR(LocalDate.ofInstant(Instant.now(), ZoneId.of("UTC")), 2323, "Ah Muzen Cab");
+
+        DailyGodDataLowMMR lowMMRdata = new DailyGodDataLowMMR(LocalDate.ofInstant(Instant.now(), ZoneId.of("UTC")), 2323, "Ah Muzen Cab");
+
+
     }
 
 }
