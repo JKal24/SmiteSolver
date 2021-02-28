@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -49,6 +50,12 @@ public class ServiceTests {
         DailyGodDataLowMMR lowMMRdata = new DailyGodDataLowMMR(LocalDate.ofInstant(Instant.now(), ZoneId.of("UTC")), 2323, "Ah Muzen Cab");
 
 
+    }
+
+    @Test
+    public void randomTest() {
+        BigDecimal decimal = new BigDecimal(567 / 4050);
+        System.out.println(decimal);
     }
 
 }

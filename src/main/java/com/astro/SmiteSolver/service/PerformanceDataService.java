@@ -5,11 +5,11 @@ import com.astro.SmiteSolver.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Map;
-import java.util.Optional;
 
 @Service
 public class PerformanceDataService {
@@ -24,7 +24,10 @@ public class PerformanceDataService {
     private DailyHighMMRDailyGodDataRepository dailyHighMMRGodDataRepository;
 
     @Autowired
-    private GodPerformanceRepository performanceRepository;
+    private HighMMRPerformanceRepository highMMRPerformanceRepository;
+
+    @Autowired
+    private LowMMRPerformanceRepository lowMMRPerformanceRepository;
 
     @Autowired
     private GodNameRepository godNameRepository;
@@ -51,7 +54,7 @@ public class PerformanceDataService {
             DailyGodDataHighMMR dataHighMMR = highMMRMap.get(godID);
             DailyGodDataLowMMR dataLowMMR = lowMMRMap.get(godID);
 
-            performanceRepository.findById(godID).ifPresentOrElse(godData -> {
+            highMMRPerformanceRepository.findById(godID).ifPresentOrElse(godData -> {
 
 
 
@@ -60,6 +63,8 @@ public class PerformanceDataService {
             }, () -> {
 
             });
+
+
         }
     }
 
@@ -67,16 +72,20 @@ public class PerformanceDataService {
         LocalDate deletionDate = LocalDate.ofInstant(Instant.now(), ZoneId.of("UTC")).minusDays(UpdateService.DATA_DELETION_DAY_LIMIT);
 
         for (DailyGodDataHighMMR dataHighMMR : dailyHighMMRGodDataRepository.findAll()) {
-            if (dataHighMMR.getDate().isBefore(deletionDate)) {
-                performanceRepository.findById(dataHighMMR.getGodID()).ifPresentOrElse(godData -> {
 
-                    int totalMatchesPlayed = godData.getTotalMatchesPlayedHighMMR();
+            if (dataHighMMR.getDate().isBefore(deletionDate)) {
+
+                highMMRPerformanceRepository.findById(dataHighMMR.getGodID()).ifPresentOrElse(godData -> {
+
+                    int totalMatchesPlayed = godData.getTotalMatchesPlayed();
                     int matchesCut = dataHighMMR.getMatchesPlayed();
 
-                    godData.setAverageBasicAttackDamageHighMMR(calcDeletionAverageStat(godData.getAverageBasicAttackDamageHighMMR(),
+                    godData.setAverageBasicAttackDamage(calcDeletionAverageStat(godData.getAverageBasicAttackDamage(),
                             dataHighMMR.getAverageBasicAttackDamage(), totalMatchesPlayed, matchesCut));
-                    godData.setAverageDamageDoneHighMMR(calcDeletionAverageStat(godData.getAverageDamageDoneHighMMR(),
+                    godData.setAverageDamageDone(calcDeletionAverageStat(godData.getAverageDamageDone(),
                             dataHighMMR.getAverageDamageDone(), totalMatchesPlayed, matchesCut));
+                    godData.setAverageDamageMitigated(calcDeletionAverageStat(godData.getAverageDamageMitigated(),
+                            dataHighMMR.getAverageDamageMitigated(), totalMatchesPlayed, matchesCut));
 
                 }, null);
 
@@ -86,11 +95,11 @@ public class PerformanceDataService {
 
         for (DailyGodDataLowMMR dataLowMMR : dailyLowMMRGodDataRepository.findAll()) {
             if (dataLowMMR.getDate().isBefore(deletionDate)) {
-                performanceRepository.findById(dataLowMMR.getGodID()).ifPresentOrElse(godData -> {
-                    int totalMatchesPlayed = godData.getTotalMatchesPlayedLowMMR();
+                lowMMRPerformanceRepository.findById(dataLowMMR.getGodID()).ifPresentOrElse(godData -> {
+                    int totalMatchesPlayed = godData.getTotalMatchesPlayed();
 
-                    godData.setAverageBasicAttackDamageHighMMR(calcDeletionAverageStat(godData.getAverageBasicAttackDamageLowMMR(),
-                            dataLowMMR.getAverageBasicAttackDamage(), godData.getTotalMatchesPlayedLowMMR(), dataLowMMR.getMatchesPlayed()));
+                    godData.setAverageBasicAttackDamage(calcDeletionAverageStat(godData.getAverageBasicAttackDamage(),
+                            dataLowMMR.getAverageBasicAttackDamage(), godData.getTotalMatchesPlayed(), dataLowMMR.getMatchesPlayed()));
                 }, null);
 
                 dailyLowMMRGodDataRepository.delete(dataLowMMR);
@@ -98,12 +107,36 @@ public class PerformanceDataService {
         }
     }
 
+    private <T extends TotalGodData, H extends DailyGodData> T processDeletedGodData(T godData, H dailyGodData) {
+        int totalMatchesPlayed = godData.getTotalMatchesPlayed();
+        int matchesCut = dailyGodData.getMatchesPlayed();
+
+        godData.setAverageBasicAttackDamage(calcDeletionAverageStat(godData.getAverageBasicAttackDamage(),
+                dailyGodData.getAverageBasicAttackDamage(), totalMatchesPlayed, matchesCut));
+        godData.setAverageDamageDone(calcDeletionAverageStat(godData.getAverageDamageDone(),
+                dailyGodData.getAverageDamageDone(), totalMatchesPlayed, matchesCut));
+        godData.setAverageDamageMitigated(calcDeletionAverageStat(godData.getAverageDamageMitigated(),
+                dailyGodData.getAverageDamageMitigated(), totalMatchesPlayed, matchesCut));
+
+        int numMatches = godData.getTotalMatchesPlayed() - dailyGodData.getMatchesPlayed();
+        int numBans = godData.getTotalBans() - dailyGodData.getBans();
+        int numWins = godData.getTotalWins() - dailyGodData.getWins();
+
+        godData.setTotalMatchesPlayed(numMatches);
+        godData.setTotalBans(numBans);
+        godData.setTotalWins(numWins);
+
+        godData.setMovingBanRate(new BigDecimal(numBans / numMatches));
+
+        return godData;
+    }
+
     private int calcDeletionAverageStat(int totalStat, int dailyStat, int totalMatchesPlayed, int matchesCut) {
         return (totalStat * totalMatchesPlayed - dailyStat * matchesCut) / totalMatchesPlayed - matchesCut;
     }
 
     private int calcInsertionAverageStat() {
-
+        return 0;
     }
 
     public void configureHighMMRGodData(Map<Integer, DailyGodDataHighMMR> data) {

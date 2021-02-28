@@ -2,9 +2,7 @@ package com.astro.SmiteSolver.entity;
 
 import javax.persistence.Entity;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Entity(name="god_data_high_mmr")
