@@ -16,17 +16,23 @@ public class TotalGodData {
 
     private Integer totalMatchesPlayed;
 
+    private Integer newPatchMatchesPlayed;
+
     private BigDecimal movingPickRate;
 
     private BigDecimal newPatchPickRate;
 
     private Integer totalWins;
 
+    private Integer newPatchWins;
+
     private BigDecimal movingWinRate;
 
     private BigDecimal newPatchWinRate;
 
     private Integer totalBans;
+
+    private Integer newPatchBans;
 
     private BigDecimal movingBanRate;
 
@@ -50,20 +56,24 @@ public class TotalGodData {
 
     private Integer averageDamageMitigated;
 
-    public TotalGodData(Integer godID, String godName, Integer totalMatchesPlayed, BigDecimal movingPickRate,
-                        BigDecimal newPatchPickRate, Integer totalWins, BigDecimal movingWinRate, BigDecimal newPatchWinRate,
-                        Integer totalBans, BigDecimal movingBanRate, BigDecimal newPatchBanRate, Map<String, Integer> skinsUsed,
+    public TotalGodData(Integer godID, String godName, Integer totalMatchesPlayed, Integer newPatchMatchesPlayed,
+                        BigDecimal movingPickRate, BigDecimal newPatchPickRate, Integer totalWins, Integer newPatchWins,
+                        BigDecimal movingWinRate, BigDecimal newPatchWinRate, Integer totalBans, Integer newPatchBans,
+                        BigDecimal movingBanRate, BigDecimal newPatchBanRate, Map<String, Integer> skinsUsed,
                         Map<String, Integer> popularItems, Map<String, Integer> newPatchPopularItems, Map<String, Integer> popularActives,
                         Integer averageDamageDone, Integer averageBasicAttackDamage, Integer averageDamageMitigated) {
         this.godID = godID;
         this.godName = godName;
         this.totalMatchesPlayed = totalMatchesPlayed;
+        this.newPatchMatchesPlayed = newPatchMatchesPlayed;
         this.movingPickRate = movingPickRate;
         this.newPatchPickRate = newPatchPickRate;
         this.totalWins = totalWins;
+        this.newPatchWins = newPatchWins;
         this.movingWinRate = movingWinRate;
         this.newPatchWinRate = newPatchWinRate;
         this.totalBans = totalBans;
+        this.newPatchBans = newPatchBans;
         this.movingBanRate = movingBanRate;
         this.newPatchBanRate = newPatchBanRate;
         this.skinsUsed = skinsUsed;
@@ -99,6 +109,14 @@ public class TotalGodData {
         this.totalMatchesPlayed = totalMatchesPlayed;
     }
 
+    public Integer getNewPatchMatchesPlayed() {
+        return newPatchMatchesPlayed;
+    }
+
+    public void setNewPatchMatchesPlayed(Integer newPatchMatchesPlayed) {
+        this.newPatchMatchesPlayed = newPatchMatchesPlayed;
+    }
+
     public BigDecimal getMovingPickRate() {
         return movingPickRate;
     }
@@ -123,6 +141,14 @@ public class TotalGodData {
         this.totalWins = totalWins;
     }
 
+    public Integer getNewPatchWins() {
+        return newPatchWins;
+    }
+
+    public void setNewPatchWins(Integer newPatchWins) {
+        this.newPatchWins = newPatchWins;
+    }
+
     public BigDecimal getMovingWinRate() {
         return movingWinRate;
     }
@@ -145,6 +171,14 @@ public class TotalGodData {
 
     public void setTotalBans(Integer totalBans) {
         this.totalBans = totalBans;
+    }
+
+    public Integer getNewPatchBans() {
+        return newPatchBans;
+    }
+
+    public void setNewPatchBans(Integer newPatchBans) {
+        this.newPatchBans = newPatchBans;
     }
 
     public BigDecimal getMovingBanRate() {

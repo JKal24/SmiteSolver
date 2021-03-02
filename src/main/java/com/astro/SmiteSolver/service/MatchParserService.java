@@ -53,18 +53,21 @@ public class MatchParserService {
     }
 
     public void updateData() {
-        boolean newVersionCheck = checkForPatchUpdates();
-        if (newVersionCheck) {
-            // Update god lists, patch win rates, etc.
+        if (updateService.hasBeenUpdated()) {
+            return;
+        }
 
+        if (checkForPatchUpdates()) {
+            // Update god list
             compileGodList();
         }
 
-        LocalDate updateDate = updateService.getUpdatableDate();
+        LocalDate updateDate = utils.getComparableDate(1);
 
         Map<Integer, DailyGodDataHighMMR> godDataHighMMRMap = new HashMap<>();
         Map<Integer, DailyGodDataLowMMR> godDataLowMMRMap = new HashMap<>();
-        int matchCount = 0;
+        int matchCountHighMMR = 0;
+        int matchCountLowMMR = 0;
 
         for(int parseHours = 0; parseHours < 24; parseHours++) {
             for (Map.Entry<Integer, PlayerMatchData[]> matchDataEntry : getDailyMultiMatchData(updateDate, parseHours).entrySet()) {
@@ -97,6 +100,7 @@ public class MatchParserService {
                     averageMMRList.add(playerMatchData.getRankStatConquest());
                 }
 
+                boolean highMMR = getMMRAverage(averageMMRList) > utils.HIGH_MMR_BOUNDARY;
                 // Builds up ban data for playable gods
                 for (Integer bannedGodID : getBannedGodIDs(matchInfo[0])) {
                     DailyGodData data;
@@ -104,7 +108,7 @@ public class MatchParserService {
 
                     if (name.isPresent()) {
 
-                        if (getMMRAverage(averageMMRList) < utils.HIGH_MMR_BOUNDARY) {
+                        if (highMMR) {
                             data = godDataHighMMRMap.containsKey(bannedGodID) ? godDataHighMMRMap.get(bannedGodID) :
                                     new DailyGodDataHighMMR(updateDate, bannedGodID, name.get().getGodName());
                             godDataHighMMRMap.put(bannedGodID, (DailyGodDataHighMMR) incrementBans(data));
@@ -117,12 +121,16 @@ public class MatchParserService {
                         }
                     }
                 }
-                matchCount++;
+                if (highMMR) {
+                    matchCountHighMMR++;
+                } else {
+                    matchCountLowMMR++;
+                }
             }
         }
+        performanceDataService.configureMatchData(updateDate, matchCountHighMMR, matchCountLowMMR);
         performanceDataService.configureHighMMRGodData(godDataHighMMRMap);
         performanceDataService.configureLowMMRGodData(godDataLowMMRMap);
-        performanceDataService.configureMatchData(updateDate, matchCount);
     }
 
     public Map<Integer, PlayerMatchData[]> getDailyMultiMatchData(LocalDate date, int hour) {
@@ -148,18 +156,16 @@ public class MatchParserService {
     }
 
     public boolean checkForPatchUpdates() {
-        if (!updateService.hasBeenUpdatedToday()) {
-            if (updateService.isUpdatableVersion(Double.parseDouble(api.getPatchInfo()[0].getVersion_string()))) {
+        if (updateService.isUpdatableVersion(Double.parseDouble(api.getPatchInfo()[0].getVersion_string()))) {
 
-                for (GodInfo info : api.getGods(Language.ENGLISH.getLanguageID())) {
+            for (GodInfo info : api.getGods(Language.ENGLISH.getLanguageID())) {
 
-                    Integer godID = info.getGodID();
-                    if (checkNewGod(godID)) {
-                        godNameRepository.save(new GodName(godID, info.getName()));
-                    }
+                Integer godID = info.getGodID();
+                if (checkNewGod(godID)) {
+                    godNameRepository.save(new GodName(godID, info.getName()));
                 }
-                return true;
             }
+            return true;
         }
         return false;
     }
@@ -169,15 +175,16 @@ public class MatchParserService {
     }
 
     public DailyGodData configureGodData(PlayerMatchData playerMatchData, DailyGodData data) {
+        int matchesPlayed = data.getMatchesPlayed();
+
         if (getWinStatus(playerMatchData.getSideSelection(), playerMatchData.getWinningSide()) == 1) {
             incrementWins(data);
         }
-        incrementMatchesPlayed(data);
-
         addSkins(data, playerMatchData.getSkin());
         addItems(data, getPlayerItems(playerMatchData));
         addActives(data, getPlayerActives(playerMatchData));
-        addDamageStats(data, playerMatchData.getDamagePlayer(), playerMatchData.getBasicAttackDamage(), playerMatchData.getDamageMitigated());
+        addMatchStats(data, matchesPlayed, playerMatchData.getDamagePlayer(),
+                playerMatchData.getBasicAttackDamage(), playerMatchData.getDamageMitigated());
         return data;
     }
 
@@ -189,8 +196,19 @@ public class MatchParserService {
         return data;
     }
 
-    public void incrementMatchesPlayed(DailyGodData data) {
-        data.setMatchesPlayed(data.getMatchesPlayed() + 1);
+    public void addMatchStats(DailyGodData data, int matchesPlayed, Integer damageDone,
+                              Integer basicAttackDamageDone, Integer damageMitigated) {
+        int incrementMatches = matchesPlayed + 1;
+        data.setMatchesPlayed(incrementMatches);
+
+        Integer damageScore = ((data.getAverageDamageDone() * matchesPlayed) + damageDone) / incrementMatches;
+        data.setAverageDamageDone(damageScore);
+
+        Integer basicAttackScores = ((data.getAverageBasicAttackDamage() * matchesPlayed) + basicAttackDamageDone) / incrementMatches;
+        data.setAverageBasicAttackDamage(basicAttackScores);
+
+        Integer damageMitigatedScores = ((data.getAverageDamageMitigated() * matchesPlayed) + damageMitigated) / incrementMatches;
+        data.setAverageDamageMitigated(damageMitigatedScores);
     }
 
     public void incrementWins(DailyGodData data) {
@@ -226,20 +244,6 @@ public class MatchParserService {
                 actives.put(active, 1);
             }
         }
-    }
-
-    public void addDamageStats(DailyGodData data, Integer damageDone, Integer basicAttackDamageDone, Integer damageMitigated) {
-        List<Integer> damageScores = data.getDamageDone();
-        damageScores.add(damageDone);
-        data.setDamageDone(damageScores);
-
-        List<Integer> basicAttackScores = data.getBasicAttackDamage();
-        basicAttackScores.add(basicAttackDamageDone);
-        data.setBasicAttackDamage(basicAttackScores);
-
-        List<Integer> damageMitigatedScores = data.getDamageMitigated();
-        damageMitigatedScores.add(damageMitigated);
-        data.setDamageMitigated(damageMitigatedScores);
     }
 
     public Integer makeDataID(LocalDate date, Integer godID) {

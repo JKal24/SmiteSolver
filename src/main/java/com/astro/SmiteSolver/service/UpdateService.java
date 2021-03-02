@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.Iterator;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -25,9 +26,9 @@ public class UpdateService {
     @Autowired
     private GodNameRepository godNameRepository;
 
-    public UpdateData getUpdateData(LocalDate date) {
+    public Double getVersion(LocalDate date) {
         Optional<UpdateData> data = updateRepository.findById(date);
-        return data.orElse(null);
+        return data.isPresent() ? data.get().getVersion() : 0;
     }
 
     public void registerGod(Integer godID, String godName) {
@@ -41,21 +42,34 @@ public class UpdateService {
         updateRepository.save(data);
     }
 
-    public LocalDate getUpdatableDate() {
-        LocalDate date = LocalDate.ofInstant(Instant.now(), ZoneId.of("UTC"));
+    public LocalDate getVersionUpdateDate() {
+        UpdateData updateData = getMostRecentUpdate();
+        LocalDate updateDate = updateData.getDate();
+        Double version = updateData.getVersion();
 
-        for (int parseDates = 1; parseDates <= DATA_DELETION_DAY_LIMIT; parseDates++) {
-            LocalDate prevDate = date.minusDays(parseDates);
-            if(updateRepository.findById(prevDate).isEmpty()) {
-                return prevDate;
+        for (UpdateData data : updateRepository.findAll()) {
+            if (!data.getVersion().equals(version) && data.getDate().isAfter(updateDate)) {
+                updateDate = data.getDate();
             }
         }
-
-        return null;
+        return updateDate;
     }
 
-    public boolean hasBeenUpdatedToday() {
-        LocalDate dateToday = utils.getComparableDate(0);
+    public UpdateData getMostRecentUpdate() {
+        UpdateData data = null;
+
+        for (UpdateData nextUpdate : updateRepository.findAll()) {
+            if (data == null) {
+                data = nextUpdate;
+            } else if (nextUpdate.getDate().isBefore(data.getDate())) {
+                data = nextUpdate;
+            }
+        }
+        return data;
+    }
+
+    public boolean hasBeenUpdated() {
+        LocalDate dateToday = utils.getComparableDate(1);
         return updateRepository.findById(dateToday).isPresent();
     }
 
