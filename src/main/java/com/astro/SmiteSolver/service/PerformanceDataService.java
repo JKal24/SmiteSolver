@@ -2,6 +2,7 @@ package com.astro.SmiteSolver.service;
 
 import com.astro.SmiteSolver.entity.*;
 import com.astro.SmiteSolver.repository.*;
+import com.astro.smitebasic.objects.player.matches.PlayerMatchData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -59,16 +60,26 @@ public class PerformanceDataService {
 
             highMMRPerformanceRepository.findById(godID).ifPresentOrElse(godData -> {
 
-
-
+                processGodData(dataHighMMR);
                 deleteGodData();
+            }, () -> {
+                // God names should have been updated, if god ID not found then problem with API recording
+            });
 
+            lowMMRPerformanceRepository.findById(godID).ifPresentOrElse(godData -> {
+
+                processGodData(dataLowMMR);
+                deleteGodData();
             }, () -> {
 
             });
 
 
         }
+    }
+
+    public <T extends DailyGodData> void processGodData(T godData) {
+
     }
 
     public void deleteGodData() {
@@ -98,10 +109,16 @@ public class PerformanceDataService {
 
             if (dataHighMMR.getDate().isBefore(deletionDate)) {
 
-                int finalTotalMatches = totalMatchesHighMMR;
+                int finalTotalMatchesHighMMR = totalMatchesHighMMR;
+                int finalNewPatchMatchesHighMMR = newPatchMatchesHighMMR;
+
                 highMMRPerformanceRepository.findById(dataHighMMR.getGodID()).ifPresentOrElse(godData -> {
 
-                    highMMRPerformanceRepository.save(processDeletedGodData(godData, dataHighMMR, finalTotalMatches));
+                    highMMRPerformanceRepository.save(processDeletedGodData(godData, dataHighMMR, finalTotalMatchesHighMMR));
+
+                    if (dataHighMMR.getDate().isBefore(patchDate)) {
+                        highMMRPerformanceRepository.save(processNewPatchDeletedGodData(godData, dataHighMMR, finalNewPatchMatchesHighMMR));
+                    }
 
                 }, null);
 
@@ -113,10 +130,16 @@ public class PerformanceDataService {
 
             if (dataLowMMR.getDate().isBefore(deletionDate)) {
 
-                int finalTotalMatches1 = totalMatchesLowMMR;
+                int finalTotalMatchesLowMMR = totalMatchesLowMMR;
+                int finalNewPatchMatchesLowMMR = newPatchMatchesLowMMR;
+
                 lowMMRPerformanceRepository.findById(dataLowMMR.getGodID()).ifPresentOrElse(godData -> {
 
-                    lowMMRPerformanceRepository.save(processDeletedGodData(godData, dataLowMMR, finalTotalMatches1));
+                    lowMMRPerformanceRepository.save(processDeletedGodData(godData, dataLowMMR, finalTotalMatchesLowMMR));
+
+                    if (dataLowMMR.getDate().isBefore(patchDate)) {
+                        lowMMRPerformanceRepository.save(processNewPatchDeletedGodData(godData, dataLowMMR, finalNewPatchMatchesLowMMR));
+                    }
 
                 }, null);
 
@@ -144,11 +167,35 @@ public class PerformanceDataService {
         godData.setTotalBans(numBans);
         godData.setTotalWins(numWins);
 
-        godData.setMovingBanRate(new BigDecimal(numBans / numMatches));
         godData.setMovingPickRate(new BigDecimal(numMatches / totalMatches));
+        godData.setMovingBanRate(new BigDecimal(numBans / numMatches));
         godData.setMovingWinRate(new BigDecimal(numWins / numMatches));
 
+        Map<String, Integer> skins = godData.getSkinsUsed();
+        for (Map.Entry<String, Integer> skinsEntry : dailyGodData.getSkinsUsed().entrySet()) {
+            String key = skinsEntry.getKey();
+            skins.put(key, skins.getOrDefault(key, 0) + skinsEntry.getValue());
+        }
+        godData.setSkinsUsed(skins);
 
+        godData.setPopularActives();
+        godData.setPopularItems();
+
+        return godData;
+    }
+
+    private <T extends TotalGodData, H extends DailyGodData> T processNewPatchDeletedGodData(T godData, H dailyGodData, int newPatchMatches) {
+        int numNewPatchMatches = godData.getNewPatchMatchesPlayed() - dailyGodData.getMatchesPlayed();
+        int numNewPatchBans = godData.getNewPatchBans() - dailyGodData.getBans();
+        int numNewPatchWins = godData.getNewPatchWins() - dailyGodData.getWins();
+
+        godData.setNewPatchMatchesPlayed(numNewPatchMatches);
+        godData.setNewPatchBans(numNewPatchBans);
+        godData.setNewPatchWins(numNewPatchWins);
+
+        godData.setNewPatchPickRate(new BigDecimal(numNewPatchMatches / newPatchMatches));
+        godData.setNewPatchBanRate(new BigDecimal(numNewPatchBans / numNewPatchMatches));
+        godData.setNewPatchWinRate(new BigDecimal(numNewPatchWins / numNewPatchMatches));
 
         return godData;
     }

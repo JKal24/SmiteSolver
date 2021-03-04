@@ -89,16 +89,8 @@ public class TotalGodData {
         return godID;
     }
 
-    public void setGodID(Integer godID) {
-        this.godID = godID;
-    }
-
     public String getGodName() {
         return godName;
-    }
-
-    public void setGodName(String godName) {
-        this.godName = godName;
     }
 
     public Integer getTotalMatchesPlayed() {
