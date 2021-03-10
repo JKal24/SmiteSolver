@@ -18,6 +18,8 @@ public class GodName {
         this.godName = godName;
     }
 
+    public GodName() { }
+
     public Integer getGodID() {
         return godID;
     }

@@ -32,8 +32,6 @@ public class ServiceTests {
     @Autowired
     private GodNameRepository godNameRepository;
 
-    // Used to test update service before it went live
-
     @Test
     public void updateTest() {
         updateService.addUpdate(LocalDate.ofInstant(Instant.now(), ZoneId.of("UTC")).minusDays(31), 7.12);
@@ -41,7 +39,7 @@ public class ServiceTests {
         updateService.addUpdate(LocalDate.ofInstant(Instant.now(), ZoneId.of("UTC")).minusDays(9), 7.14);
 
         updateService.cleanUpdates();
-        assertThat(updateService.getDaysStored()).isEqualTo(3);
+        assertThat(updateService.getDaysStored()).isEqualTo(2);
     }
 
     public void GodDataTest() {
@@ -50,12 +48,6 @@ public class ServiceTests {
         DailyGodDataLowMMR lowMMRdata = new DailyGodDataLowMMR(LocalDate.ofInstant(Instant.now(), ZoneId.of("UTC")), 2323, "Ah Muzen Cab");
 
 
-    }
-
-    @Test
-    public void randomTest() {
-        BigDecimal decimal = new BigDecimal(567 / 4050);
-        System.out.println(decimal);
     }
 
 }

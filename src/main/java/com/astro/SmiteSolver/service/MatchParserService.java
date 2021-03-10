@@ -128,9 +128,8 @@ public class MatchParserService {
                 }
             }
         }
+        performanceDataService.compileGodData(godDataHighMMRMap, godDataLowMMRMap, matchCountHighMMR, matchCountLowMMR);
         performanceDataService.configureMatchData(updateDate, matchCountHighMMR, matchCountLowMMR);
-        performanceDataService.configureHighMMRGodData(godDataHighMMRMap);
-        performanceDataService.configureLowMMRGodData(godDataLowMMRMap);
     }
 
     public Map<Integer, PlayerMatchData[]> getDailyMultiMatchData(LocalDate date, int hour) {
