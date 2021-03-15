@@ -1,8 +1,6 @@
 package com.astro.SmiteSolver.entity;
 
-import javax.persistence.ElementCollection;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
+import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,13 +23,25 @@ public class DailyGodData {
 
     private Integer bans;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "skins",
+            joinColumns = @JoinColumn(name = "skins_id"))
+    @MapKeyJoinColumn(name = "dataID")
+    @Column(name = "skins_count")
     private Map<String, Integer> skinsUsed;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "items",
+            joinColumns = @JoinColumn(name = "items_id"))
+    @MapKeyJoinColumn(name = "dataID")
+    @Column(name = "items_count")
     private Map<String, Integer> popularItems;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "actives",
+            joinColumns = @JoinColumn(name = "actives_id"))
+    @MapKeyJoinColumn(name = "dataID")
+    @Column(name = "actives_count")
     private Map<String, Integer> popularActives;
 
     private Integer averageDamageDone;
@@ -43,7 +53,7 @@ public class DailyGodData {
     public DailyGodData(LocalDate date, Integer godID, String godName, Integer matchesPlayed, Integer wins, Integer bans,
                         Map<String, Integer> skinsUsed, Map<String, Integer> popularItems, Map<String, Integer> popularActives,
                         Integer averageDamageDone, Integer averageBasicAttackDamage, Integer averageDamageMitigated) {
-        this.dataID = dataID;
+        this.dataID = date.getDayOfMonth() + date.getMonthValue() + date.getYear() + godID;
         this.date = date;
         this.godID = godID;
         this.godName = godName;
@@ -58,12 +68,10 @@ public class DailyGodData {
         this.averageDamageMitigated = averageDamageMitigated;
     }
 
+    public DailyGodData() { }
+
     public Integer getDataID() {
         return dataID;
-    }
-
-    private void setDataID(Integer dataID) {
-        this.dataID = dataID;
     }
 
     public LocalDate getDate() {

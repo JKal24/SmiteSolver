@@ -8,10 +8,7 @@ import com.astro.SmiteSolver.repository.UpdateRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
 import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.Iterator;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -44,8 +41,15 @@ public class UpdateService {
 
     public LocalDate getVersionUpdateDate() {
         UpdateData updateData = getMostRecentUpdate();
-        LocalDate updateDate = updateData.getDate();
-        Double version = updateData.getVersion();
+        LocalDate updateDate;
+        Double version;
+        if (updateData != null) {
+            updateDate = updateData.getDate();
+            version = updateData.getVersion();
+        } else {
+            updateDate = utils.getComparableDate(0);
+            version = 0.0;
+        }
 
         for (UpdateData data : updateRepository.findAll()) {
             if (!data.getVersion().equals(version) && data.getDate().isAfter(updateDate)) {

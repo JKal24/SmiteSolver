@@ -20,6 +20,8 @@ public class MatchRecordedData {
         this.matchesPlayedLowMMR = matchesPlayedLowMMR;
     }
 
+    public MatchRecordedData() { }
+
     public LocalDate getDate() {
         return date;
     }

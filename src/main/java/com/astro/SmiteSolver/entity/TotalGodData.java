@@ -1,8 +1,6 @@
 package com.astro.SmiteSolver.entity;
 
-import javax.persistence.ElementCollection;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Map;
 
@@ -38,16 +36,32 @@ public class TotalGodData {
 
     private BigDecimal newPatchBanRate;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "skins",
+            joinColumns = @JoinColumn(name = "skins_id"))
+    @MapKeyJoinColumn(name = "godID")
+    @Column(name = "skins_count")
     private Map<String, Integer> skinsUsed;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "items",
+            joinColumns = @JoinColumn(name = "items_id"))
+    @MapKeyJoinColumn(name = "godID")
+    @Column(name = "items_count")
     private Map<String, Integer> popularItems;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "patch_items",
+            joinColumns = @JoinColumn(name = "new_patch_items_id"))
+    @MapKeyJoinColumn(name = "godID")
+    @Column(name = "patch_items_count")
     private Map<String, Integer> newPatchPopularItems;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "actives",
+            joinColumns = @JoinColumn(name = "actives_id"))
+    @MapKeyJoinColumn(name = "godID")
+    @Column(name = "actives_count")
     private Map<String, Integer> popularActives;
 
     private Integer averageDamageDone;
@@ -84,6 +98,8 @@ public class TotalGodData {
         this.averageBasicAttackDamage = averageBasicAttackDamage;
         this.averageDamageMitigated = averageDamageMitigated;
     }
+
+    public TotalGodData() { }
 
     public Integer getGodID() {
         return godID;

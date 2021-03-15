@@ -20,4 +20,6 @@ public class DailyGodDataLowMMR extends DailyGodData {
         super(date, godID, godName, matchesPlayed, wins, bans, skinsUsed, popularItems, popularActives,
                 averageDamageDone, averageBasicAttackDamage, averageDamageMitigated);
     }
+
+    public DailyGodDataLowMMR() { }
 }

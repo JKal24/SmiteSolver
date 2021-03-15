@@ -11,4 +11,12 @@ public class utils {
     public static LocalDate getComparableDate(int daysBehind) {
         return LocalDate.ofInstant(Instant.now(), ZoneId.of("UTC")).minusDays(daysBehind);
     }
+
+    public static Integer makeDailyDataID(Integer godID, LocalDate date) {
+        return date.getDayOfMonth() + date.getMonthValue() + date.getYear() + godID;
+    }
+
+    public static int roundZero(int val) {
+        return val == 0 ? 1 : val;
+    }
 }

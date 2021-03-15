@@ -26,4 +26,7 @@ public class TotalGodDataHighMMR extends TotalGodData{
                 movingWinRate, newPatchWinRate, totalBans, newPatchBans, movingBanRate, newPatchBanRate, skinsUsed, popularItems,
                 newPatchPopularItems, popularActives, averageDamageDone, averageBasicAttackDamage, averageDamageMitigated);
     }
+
+    public TotalGodDataHighMMR() {
+    }
 }
