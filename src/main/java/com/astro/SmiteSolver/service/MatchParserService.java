@@ -18,9 +18,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.time.Instant;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.*;
 
 @Service
@@ -53,14 +51,11 @@ public class MatchParserService {
     }
 
     public void updateData() {
-        if (updateService.hasBeenUpdated()) {
+        if (updateService.hasBeenUpdatedToday()) {
             return;
         }
-
-        if (checkForPatchUpdates()) {
-            // Update god list
-            compileGodList();
-        }
+        // Updates god list if version change
+        updatePatch();
 
         LocalDate updateDate = utils.getComparableDate(1);
 
@@ -133,10 +128,12 @@ public class MatchParserService {
     }
 
     public Map<Integer, PlayerMatchData[]> getDailyMultiMatchData(LocalDate date, int hour) {
-        Integer[] matchIDs = Arrays.stream(api.getMatchIDs(Mode.CONQUEST_LEAGUE.getModeID(), date, hour))
+        MatchInfo[] info = api.getMatchIDs(Mode.CONQUEST_LEAGUE.getModeID(), date, hour);
+        Integer[] matchIDs = Arrays.stream(info)
                 .map(MatchInfo::getMatchID)
                 .toArray(Integer[]::new);
-        return api.getMultipleMatchData(matchIDs).getPlayerMatchDataList();
+        Map<Integer, PlayerMatchData[]> data = api.getMultipleMatchData(matchIDs).getPlayerMatchDataList();
+        return data;
     }
 
     public Map<Integer, PlayerMatchData[]> getDailyMultiMatchData(LocalDate date, int hour, int minutes) {
@@ -146,27 +143,23 @@ public class MatchParserService {
         return api.getMultipleMatchData(matchIDs).getPlayerMatchDataList();
     }
 
-    public void compileGodList() {
-        GodInfo[] godInfos = api.getGods(Language.ENGLISH.getLanguageID());
+    public void updatePatch() {
+        Double version = Utils.parseSingleEntry(api.getPatchInfo()).getVersion();
 
-        for (GodInfo godInfo : godInfos) {
-            updateService.registerGod(godInfo.getGodID(), godInfo.getName());
-        }
-    }
+        if (updateService.isUpdatableVersion(version)) {
 
-    public boolean checkForPatchUpdates() {
-        if (updateService.isUpdatableVersion(Double.parseDouble(api.getPatchInfo()[0].getVersion_string()))) {
-
-            for (GodInfo info : api.getGods(Language.ENGLISH.getLanguageID())) {
+            GodInfo[] godList = api.getGods(Language.ENGLISH.getLanguageID());
+            for (GodInfo info : godList) {
 
                 Integer godID = info.getGodID();
                 if (checkNewGod(godID)) {
                     godNameRepository.save(new GodName(godID, info.getName()));
                 }
             }
-            return true;
         }
-        return false;
+
+        updateService.addUpdate(utils.getComparableDate(1), version);
+        updateService.cleanUpdates();
     }
 
     public boolean checkNewGod(Integer godID) {
@@ -245,10 +238,6 @@ public class MatchParserService {
         }
     }
 
-    public Integer makeDataID(LocalDate date, Integer godID) {
-        return date.getDayOfMonth() + date.getMonthValue() + date.getYear() + godID;
-    }
-
     private List<String> getPlayerItems(PlayerMatchData data) {
         return Arrays.asList(data.getItemPurch1(), data.getItemPurch2(), data.getItemPurch3(),
                 data.getItemPurch4(), data.getItemPurch5(), data.getItemPurch6());
@@ -270,15 +259,6 @@ public class MatchParserService {
 
     private Float getMMRAverage(List<Float> averageMMR) {
         return averageMMR.stream().reduce(0.0F, Float::sum) / averageMMR.size();
-    }
-
-    public void updateVersion() {
-        String versionString = Utils.parseSingleEntry(api.getPatchInfo()).getVersion_string();
-    }
-
-    private boolean isUpdatableDate(LocalDate prevDate) {
-        LocalDate currentDate = LocalDate.ofInstant(Instant.now(), ZoneId.of("UTC"));
-        return currentDate.minusDays(1).isAfter(prevDate);
     }
 
 }

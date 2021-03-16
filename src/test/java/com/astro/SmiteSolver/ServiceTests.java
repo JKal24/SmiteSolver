@@ -8,6 +8,10 @@ import com.astro.SmiteSolver.service.PerformanceDataService;
 import com.astro.SmiteSolver.service.UpdateService;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.astro.smitebasic.api.SmiteAPI;
+import com.astro.smitebasic.objects.gamedata.matches.MatchInfo;
+import com.astro.smitebasic.objects.gamedata.matches.MultiMatchInfo;
+import com.astro.smitebasic.objects.player.matches.PlayerMatchData;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,10 +19,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @SpringBootTest
 public class ServiceTests {
@@ -35,26 +36,17 @@ public class ServiceTests {
     @Autowired
     private GodNameRepository godNameRepository;
 
+    @Autowired
+    private SmiteAPI api;
+
     @Test
     public void updateTest() {
-        updateService.addUpdate(LocalDate.ofInstant(Instant.now(), ZoneId.of("UTC")).minusDays(31), 7.12);
-        updateService.addUpdate(LocalDate.ofInstant(Instant.now(), ZoneId.of("UTC")).minusDays(6), 7.15);
-        updateService.addUpdate(LocalDate.ofInstant(Instant.now(), ZoneId.of("UTC")).minusDays(9), 7.14);
-
-        updateService.cleanUpdates();
-        assertThat(updateService.getDaysStored()).isEqualTo(2);
+        System.out.println(api.getDataUsed()[0]);
     }
 
     @Test
     public void compileTest() {
-        matchParserService.compileGodList();
-        Map<Integer, DailyGodDataHighMMR> godMapHighMMR = getHighMMRGodData();
-        Map<Integer, DailyGodDataLowMMR> godMapLowMMR = getLowMMRGodData();
-
-        assertThat(godMapHighMMR).isNotEmpty();
-        assertThat(godMapLowMMR).isNotEmpty();
-
-        performanceDataService.compileGodData(godMapHighMMR, godMapLowMMR, 0, 0);
+        matchParserService.updateData();
     }
 
     @Test

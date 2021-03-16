@@ -1,7 +1,6 @@
 package com.astro.SmiteSolver.service;
 
 import com.astro.SmiteSolver.config.utils;
-import com.astro.SmiteSolver.entity.GodName;
 import com.astro.SmiteSolver.entity.UpdateData;
 import com.astro.SmiteSolver.repository.GodNameRepository;
 import com.astro.SmiteSolver.repository.UpdateRepository;
@@ -23,56 +22,35 @@ public class UpdateService {
     @Autowired
     private GodNameRepository godNameRepository;
 
-    public Double getVersion(LocalDate date) {
-        Optional<UpdateData> data = updateRepository.findById(date);
-        return data.isPresent() ? data.get().getVersion() : 0;
-    }
-
-    public void registerGod(Integer godID, String godName) {
-        godNameRepository.save(new GodName(godID, godName));
-    }
-
     public void addUpdate(LocalDate date, Double versionID) {
-        UpdateData data = new UpdateData();
-        data.setDate(date);
-        data.setVersion(versionID);
+        this.addUpdate(new UpdateData(date, versionID));
+    }
+
+    public void addUpdate(UpdateData data) {
         updateRepository.save(data);
     }
 
     public LocalDate getVersionUpdateDate() {
         UpdateData updateData = getMostRecentUpdate();
-        LocalDate updateDate;
-        Double version;
         if (updateData != null) {
-            updateDate = updateData.getDate();
-            version = updateData.getVersion();
+            return updateData.getDate();
         } else {
-            updateDate = utils.getComparableDate(0);
-            version = 0.0;
+            return utils.getComparableDate(1);
         }
-
-        for (UpdateData data : updateRepository.findAll()) {
-            if (!data.getVersion().equals(version) && data.getDate().isAfter(updateDate)) {
-                updateDate = data.getDate();
-            }
-        }
-        return updateDate;
     }
 
     public UpdateData getMostRecentUpdate() {
         UpdateData data = null;
 
         for (UpdateData nextUpdate : updateRepository.findAll()) {
-            if (data == null) {
-                data = nextUpdate;
-            } else if (nextUpdate.getDate().isBefore(data.getDate())) {
+            if (data == null || nextUpdate.getDate().isBefore(data.getDate())) {
                 data = nextUpdate;
             }
         }
         return data;
     }
 
-    public boolean hasBeenUpdated() {
+    public boolean hasBeenUpdatedToday() {
         LocalDate dateToday = utils.getComparableDate(1);
         return updateRepository.findById(dateToday).isPresent();
     }
@@ -87,7 +65,7 @@ public class UpdateService {
                 return data.get().getVersion() == versionID;
             }
         }
-        return false;
+        return true;
     }
 
     public void cleanUpdates() {

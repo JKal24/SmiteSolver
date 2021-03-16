@@ -24,24 +24,24 @@ public class DailyGodData {
     private Integer bans;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "skins",
-            joinColumns = @JoinColumn(name = "skins_id"))
-    @MapKeyJoinColumn(name = "dataID")
-    @Column(name = "skins_count")
+    @CollectionTable(name = "skins_used",
+            joinColumns = {@JoinColumn(name = "data_id", referencedColumnName = "dataID")})
+    @MapKeyColumn(name = "name")
+    @Column(name = "count")
     private Map<String, Integer> skinsUsed;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "items",
-            joinColumns = @JoinColumn(name = "items_id"))
-    @MapKeyJoinColumn(name = "dataID")
-    @Column(name = "items_count")
+    @CollectionTable(name = "items_used",
+            joinColumns = {@JoinColumn(name = "data_id", referencedColumnName = "dataID")})
+    @MapKeyColumn(name = "name")
+    @Column(name = "count")
     private Map<String, Integer> popularItems;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "actives",
-            joinColumns = @JoinColumn(name = "actives_id"))
-    @MapKeyJoinColumn(name = "dataID")
-    @Column(name = "actives_count")
+    @CollectionTable(name = "actives_used",
+            joinColumns = {@JoinColumn(name = "data_id", referencedColumnName = "dataID")})
+    @MapKeyColumn(name = "name")
+    @Column(name = "count")
     private Map<String, Integer> popularActives;
 
     private Integer averageDamageDone;

@@ -37,31 +37,31 @@ public class TotalGodData {
     private BigDecimal newPatchBanRate;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "skins",
-            joinColumns = @JoinColumn(name = "skins_id"))
-    @MapKeyJoinColumn(name = "godID")
-    @Column(name = "skins_count")
+    @CollectionTable(name = "total_data_skins_used",
+            joinColumns = {@JoinColumn(name = "god_id", referencedColumnName = "godID")})
+    @MapKeyColumn(name = "name")
+    @Column(name = "count")
     private Map<String, Integer> skinsUsed;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "items",
-            joinColumns = @JoinColumn(name = "items_id"))
-    @MapKeyJoinColumn(name = "godID")
-    @Column(name = "items_count")
+    @CollectionTable(name = "total_data_items_used",
+            joinColumns = {@JoinColumn(name = "god_id", referencedColumnName = "godID")})
+    @MapKeyColumn(name = "name")
+    @Column(name = "count")
     private Map<String, Integer> popularItems;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "patch_items",
-            joinColumns = @JoinColumn(name = "new_patch_items_id"))
-    @MapKeyJoinColumn(name = "godID")
-    @Column(name = "patch_items_count")
+    @CollectionTable(name = "total_data_new_patch_items_used",
+            joinColumns = {@JoinColumn(name = "god_id", referencedColumnName = "godID")})
+    @MapKeyColumn(name = "name")
+    @Column(name = "count")
     private Map<String, Integer> newPatchPopularItems;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "actives",
-            joinColumns = @JoinColumn(name = "actives_id"))
-    @MapKeyJoinColumn(name = "godID")
-    @Column(name = "actives_count")
+    @CollectionTable(name = "total_data_actives_used",
+            joinColumns = {@JoinColumn(name = "god_id", referencedColumnName = "godID")})
+    @MapKeyColumn(name = "name")
+    @Column(name = "count")
     private Map<String, Integer> popularActives;
 
     private Integer averageDamageDone;
