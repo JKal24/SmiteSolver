@@ -94,6 +94,7 @@ public class MatchParserService {
                 }
                 averageMMRList.add(playerMatchData.getRankStatConquest());
 
+                // For every unique match, create ban data for gods
                 if (!playerMatchData.getMatch().equals(currentMatchID)) {
                     boolean highMMR = getMMRAverage(averageMMRList) > utils.HIGH_MMR_BOUNDARY;
                     // Builds up ban data for playable gods
