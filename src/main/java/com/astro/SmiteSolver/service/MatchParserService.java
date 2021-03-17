@@ -65,82 +65,86 @@ public class MatchParserService {
         int matchCountLowMMR = 0;
 
         for(int parseHours = 0; parseHours < 24; parseHours++) {
-            for (Map.Entry<Integer, PlayerMatchData[]> matchDataEntry : getDailyMultiMatchData(updateDate, parseHours).entrySet()) {
-                PlayerMatchData[] matchInfo = matchDataEntry.getValue();
+            List<PlayerMatchData> matchInfo = getDailyMultiMatchData(updateDate, parseHours);
+            List<Float> averageMMRList = new ArrayList<>();
+            PlayerMatchData currentPlayerData = matchInfo.get(0);
+            int currentMatchID = currentPlayerData.getMatch();
 
-                List<Float> averageMMRList = new ArrayList<>();
+            // Parses through each player's match data where it lists their stats and god played,
+            // their stats are then copied into a custom map for either high mmr or low mmr,
+            // after the stats are built up for every copied god, the data will be inputted into the DailyGodDataRepository.
+            for (PlayerMatchData playerMatchData : matchInfo) {
+                Integer key = playerMatchData.getGodID();
+                Optional<GodName> name = godNameRepository.findById(key);
+                DailyGodData data;
 
-                // Parses through each player's match data where it lists their stats and god played,
-                // their stats are then copied into a custom map for either high mmr or low mmr,
-                // after the stats are built up for every copied god, the data will be inputted into the DailyGodDataRepository.
-                for (PlayerMatchData playerMatchData : matchInfo) {
-                    Integer key = playerMatchData.getGodID();
-                    Optional<GodName> name = godNameRepository.findById(key);
-                    DailyGodData data;
+                if (name.isPresent()) {
 
-                    if (name.isPresent()) {
+                    if (playerMatchData.getRankStatConquest() < utils.HIGH_MMR_BOUNDARY) {
+                        data = godDataHighMMRMap.containsKey(key) ? godDataHighMMRMap.get(key) :
+                                new DailyGodDataHighMMR(updateDate, key, name.get().getGodName());
+                        godDataHighMMRMap.put(key, (DailyGodDataHighMMR) configureGodData(playerMatchData, data));
 
-                        if (playerMatchData.getRankStatConquest() < utils.HIGH_MMR_BOUNDARY) {
-                            data = godDataHighMMRMap.containsKey(key) ? godDataHighMMRMap.get(key) :
-                                    new DailyGodDataHighMMR(updateDate, key, name.get().getGodName());
-                            godDataHighMMRMap.put(key, (DailyGodDataHighMMR) configureGodData(playerMatchData, data));
+                    } else {
+                        data = godDataLowMMRMap.containsKey(key) ? godDataLowMMRMap.get(key) :
+                                new DailyGodDataLowMMR(updateDate, key, name.get().getGodName());
+                        godDataLowMMRMap.put(key, (DailyGodDataLowMMR) configureGodData(playerMatchData, data));
 
-                        } else {
-                            data = godDataLowMMRMap.containsKey(key) ? godDataLowMMRMap.get(key) :
-                                    new DailyGodDataLowMMR(updateDate, key, name.get().getGodName());
-                            godDataLowMMRMap.put(key, (DailyGodDataLowMMR) configureGodData(playerMatchData, data));
-
-                        }
-                    }
-                    averageMMRList.add(playerMatchData.getRankStatConquest());
-                }
-
-                boolean highMMR = getMMRAverage(averageMMRList) > utils.HIGH_MMR_BOUNDARY;
-                // Builds up ban data for playable gods
-                for (Integer bannedGodID : getBannedGodIDs(matchInfo[0])) {
-                    DailyGodData data;
-                    Optional<GodName> name = godNameRepository.findById(bannedGodID);
-
-                    if (name.isPresent()) {
-
-                        if (highMMR) {
-                            data = godDataHighMMRMap.containsKey(bannedGodID) ? godDataHighMMRMap.get(bannedGodID) :
-                                    new DailyGodDataHighMMR(updateDate, bannedGodID, name.get().getGodName());
-                            godDataHighMMRMap.put(bannedGodID, (DailyGodDataHighMMR) incrementBans(data));
-
-                        } else {
-                            data = godDataLowMMRMap.containsKey(bannedGodID) ? godDataLowMMRMap.get(bannedGodID) :
-                                    new DailyGodDataLowMMR(updateDate, bannedGodID, name.get().getGodName());
-                            godDataHighMMRMap.put(bannedGodID, (DailyGodDataHighMMR) incrementBans(data));
-
-                        }
                     }
                 }
-                if (highMMR) {
-                    matchCountHighMMR++;
-                } else {
-                    matchCountLowMMR++;
+                averageMMRList.add(playerMatchData.getRankStatConquest());
+
+                if (!playerMatchData.getMatch().equals(currentMatchID)) {
+                    boolean highMMR = getMMRAverage(averageMMRList) > utils.HIGH_MMR_BOUNDARY;
+                    // Builds up ban data for playable gods
+                    for (Integer bannedGodID : getBannedGodIDs(currentPlayerData)) {
+                        DailyGodData bannedGodData;
+                        Optional<GodName> bannedGodName = godNameRepository.findById(bannedGodID);
+
+                        if (bannedGodName.isPresent()) {
+
+                            if (highMMR) {
+                                bannedGodData = godDataHighMMRMap.containsKey(bannedGodID) ? godDataHighMMRMap.get(bannedGodID) :
+                                        new DailyGodDataHighMMR(updateDate, bannedGodID, bannedGodName.get().getGodName());
+                                godDataHighMMRMap.put(bannedGodID, (DailyGodDataHighMMR) incrementBans(bannedGodData));
+
+                            } else {
+                                bannedGodData = godDataLowMMRMap.containsKey(bannedGodID) ? godDataLowMMRMap.get(bannedGodID) :
+                                        new DailyGodDataLowMMR(updateDate, bannedGodID, bannedGodName.get().getGodName());
+                                godDataHighMMRMap.put(bannedGodID, (DailyGodDataHighMMR) incrementBans(bannedGodData));
+
+                            }
+                        }
+                    }
+                    if (highMMR) {
+                        matchCountHighMMR++;
+                    } else {
+                        matchCountLowMMR++;
+                    }
+                    averageMMRList = new ArrayList<>();
                 }
             }
+
+
         }
         performanceDataService.compileGodData(godDataHighMMRMap, godDataLowMMRMap, matchCountHighMMR, matchCountLowMMR);
         performanceDataService.configureMatchData(updateDate, matchCountHighMMR, matchCountLowMMR);
     }
 
-    public Map<Integer, PlayerMatchData[]> getDailyMultiMatchData(LocalDate date, int hour) {
+    public List<PlayerMatchData> getDailyMultiMatchData(LocalDate date, int hour) {
         MatchInfo[] info = api.getMatchIDs(Mode.CONQUEST_LEAGUE.getModeID(), date, hour);
         Integer[] matchIDs = Arrays.stream(info)
                 .map(MatchInfo::getMatchID)
                 .toArray(Integer[]::new);
-        Map<Integer, PlayerMatchData[]> data = api.getMultipleMatchData(matchIDs).getPlayerMatchDataList();
+        List<PlayerMatchData> data = api.getMultipleMatchData(matchIDs);
         return data;
     }
 
-    public Map<Integer, PlayerMatchData[]> getDailyMultiMatchData(LocalDate date, int hour, int minutes) {
+    public List<PlayerMatchData> getDailyMultiMatchData(LocalDate date, int hour, int minutes) {
         Integer[] matchIDs = Arrays.stream(api.getMatchIDs(Mode.CONQUEST_LEAGUE.getModeID(), date, hour, minutes))
                 .map(MatchInfo::getMatchID)
                 .toArray(Integer[]::new);
-        return api.getMultipleMatchData(matchIDs).getPlayerMatchDataList();
+        return api.getMultipleMatchData(matchIDs);
     }
 
     public void updatePatch() {

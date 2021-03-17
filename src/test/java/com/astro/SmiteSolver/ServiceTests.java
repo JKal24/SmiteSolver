@@ -6,12 +6,8 @@ import com.astro.SmiteSolver.repository.GodNameRepository;
 import com.astro.SmiteSolver.service.MatchParserService;
 import com.astro.SmiteSolver.service.PerformanceDataService;
 import com.astro.SmiteSolver.service.UpdateService;
-import static org.assertj.core.api.Assertions.assertThat;
 
 import com.astro.smitebasic.api.SmiteAPI;
-import com.astro.smitebasic.objects.gamedata.matches.MatchInfo;
-import com.astro.smitebasic.objects.gamedata.matches.MultiMatchInfo;
-import com.astro.smitebasic.objects.player.matches.PlayerMatchData;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
