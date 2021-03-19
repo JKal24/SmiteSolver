@@ -11,7 +11,7 @@ public class TotalGodDataLowMMR extends TotalGodData {
         super(godID, godName, 0,0, new BigDecimal(0), new BigDecimal(0),
                 0, 0, new BigDecimal(0), new BigDecimal(0), 0, 0,
                 new BigDecimal(0), new BigDecimal(0), new HashMap<String, Integer>(),
-                new HashMap<String, Integer>(), new HashMap<String, Integer>(), new HashMap<String, Integer>(),
+                new HashMap<Item, Integer>(), new HashMap<Item, Integer>(), new HashMap<String, Integer>(),
                 0, 0, 0);
     }
 
@@ -19,7 +19,7 @@ public class TotalGodDataLowMMR extends TotalGodData {
                                BigDecimal movingPickRate, BigDecimal newPatchPickRate, Integer totalWins, Integer newPatchWins,
                                BigDecimal movingWinRate, BigDecimal newPatchWinRate, Integer totalBans, Integer newPatchBans,
                                BigDecimal movingBanRate, BigDecimal newPatchBanRate, Map<String, Integer> skinsUsed,
-                               Map<String, Integer> popularItems, Map<String, Integer> newPatchPopularItems,
+                               Map<Item, Integer> popularItems, Map<Item, Integer> newPatchPopularItems,
                                Map<String, Integer> popularActives, Integer averageDamageDone, Integer averageBasicAttackDamage,
                                Integer averageDamageMitigated) {
         super(godID, godName, totalMatchesPlayed, newPatchMatchesPlayed, movingPickRate, newPatchPickRate, totalWins, newPatchWins,

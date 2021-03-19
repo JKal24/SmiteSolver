@@ -42,11 +42,14 @@ public class ServiceTests {
 
     @Test
     public void compileTest() {
+        updateService.tempDel();
         matchParserService.updateData();
     }
 
     @Test
     public void godDataTest() {
+        matchParserService.updatePatch();
+
         for (DailyGodDataHighMMR dataHighMMR : makeDailyHighMMRGodData(utils.getComparableDate(5), 10)) {
             performanceDataService.addHighMMRGodData(dataHighMMR.getGodID(), dataHighMMR, 50, 30);
         }
@@ -57,6 +60,10 @@ public class ServiceTests {
 
         List<TotalGodDataHighMMR> highMMRList = performanceDataService.getTotalHighMMRData();
         List<TotalGodDataLowMMR> lowMMRList = performanceDataService.getTotalLowMMRData();
+
+        for (TotalGodDataHighMMR dataHighMMR : highMMRList) {
+            System.out.println(dataHighMMR);
+        }
     }
 
     private List<DailyGodDataHighMMR> makeDailyHighMMRGodData(LocalDate date, int len) {
@@ -69,7 +76,7 @@ public class ServiceTests {
 
             godList.add(new DailyGodDataHighMMR(date, godID, name, getRandomParameters(100, 10),
                     getRandomParameters(50, 5), getRandomParameters(75, 15), getRandomMap(5),
-                    getRandomMap(5), getRandomMap(5), getRandomParameters(55000, 5000),
+                    getItemRandomMap(5), getRandomMap(5), getRandomParameters(55000, 5000),
                     getRandomParameters(40000, 3000), getRandomParameters(60000, 10000)
                     ));
         }
@@ -86,7 +93,7 @@ public class ServiceTests {
 
             godList.add(new DailyGodDataLowMMR(date, godID, name, getRandomParameters(100, 10),
                     getRandomParameters(50, 5), getRandomParameters(75, 15), getRandomMap(5),
-                    getRandomMap(5), getRandomMap(5), getRandomParameters(55000, 5000),
+                    getItemRandomMap(5), getRandomMap(5), getRandomParameters(55000, 5000),
                     getRandomParameters(40000, 3000), getRandomParameters(60000, 10000)
             ));
         }
@@ -113,6 +120,16 @@ public class ServiceTests {
 
         for (int parse = 0; parse < len; parse++) {
             items.put(initial + parse, parse);
+        }
+        return items;
+    }
+
+    private Map<Item, Integer> getItemRandomMap(int len) {
+        Map<Item, Integer> items = new HashMap<>();
+        String initial = "item";
+
+        for (int parse = 0; parse < len; parse++) {
+            items.put(new Item(parse, initial + parse), parse);
         }
         return items;
     }

@@ -48,14 +48,14 @@ public class TotalGodData {
             joinColumns = {@JoinColumn(name = "god_id", referencedColumnName = "godID")})
     @MapKeyColumn(name = "name")
     @Column(name = "count")
-    private Map<String, Integer> popularItems;
+    private Map<Item, Integer> popularItems;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "total_data_new_patch_items_used",
             joinColumns = {@JoinColumn(name = "god_id", referencedColumnName = "godID")})
     @MapKeyColumn(name = "name")
     @Column(name = "count")
-    private Map<String, Integer> newPatchPopularItems;
+    private Map<Item, Integer> newPatchPopularItems;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "total_data_actives_used",
@@ -74,7 +74,7 @@ public class TotalGodData {
                         BigDecimal movingPickRate, BigDecimal newPatchPickRate, Integer totalWins, Integer newPatchWins,
                         BigDecimal movingWinRate, BigDecimal newPatchWinRate, Integer totalBans, Integer newPatchBans,
                         BigDecimal movingBanRate, BigDecimal newPatchBanRate, Map<String, Integer> skinsUsed,
-                        Map<String, Integer> popularItems, Map<String, Integer> newPatchPopularItems, Map<String, Integer> popularActives,
+                        Map<Item, Integer> popularItems, Map<Item, Integer> newPatchPopularItems, Map<String, Integer> popularActives,
                         Integer averageDamageDone, Integer averageBasicAttackDamage, Integer averageDamageMitigated) {
         this.godID = godID;
         this.godName = godName;
@@ -213,19 +213,19 @@ public class TotalGodData {
         this.skinsUsed = skinsUsed;
     }
 
-    public Map<String, Integer> getPopularItems() {
+    public Map<Item, Integer> getPopularItems() {
         return popularItems;
     }
 
-    public void setPopularItems(Map<String, Integer> popularItems) {
+    public void setPopularItems(Map<Item, Integer> popularItems) {
         this.popularItems = popularItems;
     }
 
-    public Map<String, Integer> getNewPatchPopularItems() {
+    public Map<Item, Integer> getNewPatchPopularItems() {
         return newPatchPopularItems;
     }
 
-    public void setNewPatchPopularItems(Map<String, Integer> newPatchPopularItems) {
+    public void setNewPatchPopularItems(Map<Item, Integer> newPatchPopularItems) {
         this.newPatchPopularItems = newPatchPopularItems;
     }
 
@@ -259,5 +259,32 @@ public class TotalGodData {
 
     public void setAverageDamageMitigated(Integer averageDamageMitigated) {
         this.averageDamageMitigated = averageDamageMitigated;
+    }
+
+    @Override
+    public String toString() {
+        return "TotalGodData{" +
+                "godID=" + godID +
+                ", godName='" + godName + '\'' +
+                ", totalMatchesPlayed=" + totalMatchesPlayed +
+                ", newPatchMatchesPlayed=" + newPatchMatchesPlayed +
+                ", movingPickRate=" + movingPickRate +
+                ", newPatchPickRate=" + newPatchPickRate +
+                ", totalWins=" + totalWins +
+                ", newPatchWins=" + newPatchWins +
+                ", movingWinRate=" + movingWinRate +
+                ", newPatchWinRate=" + newPatchWinRate +
+                ", totalBans=" + totalBans +
+                ", newPatchBans=" + newPatchBans +
+                ", movingBanRate=" + movingBanRate +
+                ", newPatchBanRate=" + newPatchBanRate +
+                ", skinsUsed=" + skinsUsed +
+                ", popularItems=" + popularItems +
+                ", newPatchPopularItems=" + newPatchPopularItems +
+                ", popularActives=" + popularActives +
+                ", averageDamageDone=" + averageDamageDone +
+                ", averageBasicAttackDamage=" + averageBasicAttackDamage +
+                ", averageDamageMitigated=" + averageDamageMitigated +
+                '}';
     }
 }

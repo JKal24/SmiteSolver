@@ -30,6 +30,10 @@ public class UpdateService {
         updateRepository.save(data);
     }
 
+    public void tempDel() {
+        updateRepository.deleteAll();
+    }
+
     public LocalDate getVersionUpdateDate() {
         UpdateData updateData = getMostRecentUpdate();
         if (updateData != null) {

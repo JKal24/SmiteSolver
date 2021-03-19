@@ -1,10 +1,7 @@
 package com.astro.SmiteSolver.service;
 
 import com.astro.SmiteSolver.config.utils;
-import com.astro.SmiteSolver.entity.DailyGodData;
-import com.astro.SmiteSolver.entity.DailyGodDataHighMMR;
-import com.astro.SmiteSolver.entity.DailyGodDataLowMMR;
-import com.astro.SmiteSolver.entity.GodName;
+import com.astro.SmiteSolver.entity.*;
 import com.astro.SmiteSolver.repository.GodNameRepository;
 import com.astro.smitebasic.api.SmiteAPI;
 import com.astro.smitebasic.api.Utils;
@@ -20,6 +17,8 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class MatchParserService {
@@ -78,22 +77,6 @@ public class MatchParserService {
                 Optional<GodName> name = godNameRepository.findById(key);
                 DailyGodData data;
 
-                if (name.isPresent()) {
-
-                    if (playerMatchData.getRankStatConquest() < utils.HIGH_MMR_BOUNDARY) {
-                        data = godDataHighMMRMap.containsKey(key) ? godDataHighMMRMap.get(key) :
-                                new DailyGodDataHighMMR(updateDate, key, name.get().getGodName());
-                        godDataHighMMRMap.put(key, (DailyGodDataHighMMR) configureGodData(playerMatchData, data));
-
-                    } else {
-                        data = godDataLowMMRMap.containsKey(key) ? godDataLowMMRMap.get(key) :
-                                new DailyGodDataLowMMR(updateDate, key, name.get().getGodName());
-                        godDataLowMMRMap.put(key, (DailyGodDataLowMMR) configureGodData(playerMatchData, data));
-
-                    }
-                }
-                averageMMRList.add(playerMatchData.getRankStatConquest());
-
                 // For every unique match, create ban data for gods
                 if (!playerMatchData.getMatch().equals(currentMatchID)) {
                     boolean highMMR = getMMRAverage(averageMMRList) > utils.HIGH_MMR_BOUNDARY;
@@ -112,7 +95,7 @@ public class MatchParserService {
                             } else {
                                 bannedGodData = godDataLowMMRMap.containsKey(bannedGodID) ? godDataLowMMRMap.get(bannedGodID) :
                                         new DailyGodDataLowMMR(updateDate, bannedGodID, bannedGodName.get().getGodName());
-                                godDataHighMMRMap.put(bannedGodID, (DailyGodDataHighMMR) incrementBans(bannedGodData));
+                                godDataLowMMRMap.put(bannedGodID, (DailyGodDataLowMMR) incrementBans(bannedGodData));
 
                             }
                         }
@@ -123,10 +106,27 @@ public class MatchParserService {
                         matchCountLowMMR++;
                     }
                     averageMMRList = new ArrayList<>();
+                    currentPlayerData = playerMatchData;
+                    currentMatchID = currentPlayerData.getMatch();
                 }
+
+                if (name.isPresent()) {
+
+                    if (playerMatchData.getRankStatConquest() < utils.HIGH_MMR_BOUNDARY) {
+                        data = godDataHighMMRMap.containsKey(key) ? godDataHighMMRMap.get(key) :
+                                new DailyGodDataHighMMR(updateDate, key, name.get().getGodName());
+                        godDataHighMMRMap.put(key, (DailyGodDataHighMMR) configureGodData(playerMatchData, data));
+
+                    } else {
+                        data = godDataLowMMRMap.containsKey(key) ? godDataLowMMRMap.get(key) :
+                                new DailyGodDataLowMMR(updateDate, key, name.get().getGodName());
+                        godDataLowMMRMap.put(key, (DailyGodDataLowMMR) configureGodData(playerMatchData, data));
+
+                    }
+                }
+
+                averageMMRList.add(playerMatchData.getRankStatConquest());
             }
-
-
         }
         performanceDataService.compileGodData(godDataHighMMRMap, godDataLowMMRMap, matchCountHighMMR, matchCountLowMMR);
         performanceDataService.configureMatchData(updateDate, matchCountHighMMR, matchCountLowMMR);
@@ -171,8 +171,9 @@ public class MatchParserService {
         return godNameRepository.findById(godID).isEmpty();
     }
 
-    public DailyGodData configureGodData(PlayerMatchData playerMatchData, DailyGodData data) {
+    public <T extends DailyGodData> T configureGodData(PlayerMatchData playerMatchData, T data) {
         int matchesPlayed = data.getMatchesPlayed();
+        int gameDuration = playerMatchData.getMatchDuration();
 
         if (getWinStatus(playerMatchData.getSideSelection(), playerMatchData.getWinningSide()) == 1) {
             incrementWins(data);
@@ -181,7 +182,7 @@ public class MatchParserService {
         addItems(data, getPlayerItems(playerMatchData));
         addActives(data, getPlayerActives(playerMatchData));
         addMatchStats(data, matchesPlayed, playerMatchData.getDamagePlayer(),
-                playerMatchData.getBasicAttackDamage(), playerMatchData.getDamageMitigated());
+                playerMatchData.getBasicAttackDamage(), playerMatchData.getDamageMitigated(), gameDuration);
         return data;
     }
 
@@ -194,7 +195,7 @@ public class MatchParserService {
     }
 
     public void addMatchStats(DailyGodData data, int matchesPlayed, Integer damageDone,
-                              Integer basicAttackDamageDone, Integer damageMitigated) {
+                              Integer basicAttackDamageDone, Integer damageMitigated, int gameDuration) {
         int incrementMatches = matchesPlayed + 1;
         data.setMatchesPlayed(incrementMatches);
 
@@ -219,17 +220,19 @@ public class MatchParserService {
         } else {
             skins.put(skin, 1);
         }
+        data.setSkinsUsed(skins);
     }
 
-    public void addItems(DailyGodData data, List<String> playerItems) {
-        Map<String, Integer> items = data.getPopularItems();
-        for (String item : playerItems) {
+    public void addItems(DailyGodData data, List<Item> playerItems) {
+        Map<Item, Integer> items = data.getPopularItems();
+        for (Item item : playerItems) {
             if (items.containsKey(item)) {
                 items.put(item, items.get(item) + 1);
             } else {
                 items.put(item, 1);
             }
         }
+        data.setPopularItems(items);
     }
 
     public void addActives(DailyGodData data, List<String> playerActives) {
@@ -241,20 +244,24 @@ public class MatchParserService {
                 actives.put(active, 1);
             }
         }
+        data.setPopularActives(actives);
     }
 
-    private List<String> getPlayerItems(PlayerMatchData data) {
-        return Arrays.asList(data.getItemPurch1(), data.getItemPurch2(), data.getItemPurch3(),
-                data.getItemPurch4(), data.getItemPurch5(), data.getItemPurch6());
+    private List<Item> getPlayerItems(PlayerMatchData data) {
+        return Stream.of(new Item(data.getItemID1(), data.getItemPurch1()), new Item(data.getItemID2(), data.getItemPurch2()),
+                new Item(data.getItemID3(), data.getItemPurch3()), new Item(data.getItemID4(), data.getItemPurch4()),
+                new Item(data.getItemID5(), data.getItemPurch5()), new Item(data.getItemID6(), data.getItemPurch6()))
+                .filter(entry -> !entry.getItemName().equals("")).collect(Collectors.toList());
     }
 
     private List<String> getPlayerActives(PlayerMatchData data) {
-        return Arrays.asList(data.getItemActive1(), data.getItemActive2(), data.getItemActive3(), data.getItemActive4());
+        return Stream.of(data.getItemActive1(), data.getItemActive2()).filter(entry -> !entry.equals("")).collect(Collectors.toList());
     }
 
     private List<Integer> getBannedGodIDs(PlayerMatchData data) {
-        return Arrays.asList(data.getBan1ID(), data.getBan2ID(), data.getBan3ID(), data.getBan4ID(), data.getBan5ID(),
-                data.getBan6ID(), data.getBan7ID(), data.getBan8ID(), data.getBan9ID(), data.getBan10ID());
+        return Stream.of(data.getBan1ID(), data.getBan2ID(), data.getBan3ID(), data.getBan4ID(), data.getBan5ID(),
+                data.getBan6ID(), data.getBan7ID(), data.getBan8ID(), data.getBan9ID(), data.getBan10ID())
+                .filter(entry -> !entry.equals(0)).collect(Collectors.toList());
     }
 
     // Win represents 1, a loss represents 0

@@ -35,7 +35,7 @@ public class DailyGodData {
             joinColumns = {@JoinColumn(name = "data_id", referencedColumnName = "dataID")})
     @MapKeyColumn(name = "name")
     @Column(name = "count")
-    private Map<String, Integer> popularItems;
+    private Map<Item, Integer> popularItems;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "actives_used",
@@ -51,7 +51,7 @@ public class DailyGodData {
     private Integer averageDamageMitigated;
 
     public DailyGodData(LocalDate date, Integer godID, String godName, Integer matchesPlayed, Integer wins, Integer bans,
-                        Map<String, Integer> skinsUsed, Map<String, Integer> popularItems, Map<String, Integer> popularActives,
+                        Map<String, Integer> skinsUsed, Map<Item, Integer> popularItems, Map<String, Integer> popularActives,
                         Integer averageDamageDone, Integer averageBasicAttackDamage, Integer averageDamageMitigated) {
         this.dataID = date.getDayOfMonth() + date.getMonthValue() + date.getYear() + godID;
         this.date = date;
@@ -130,11 +130,11 @@ public class DailyGodData {
         this.skinsUsed = new HashMap<>(skinsUsed);
     }
 
-    public Map<String, Integer> getPopularItems() {
+    public Map<Item, Integer> getPopularItems() {
         return new HashMap<>(popularItems);
     }
 
-    public void setPopularItems(Map<String, Integer> popularItems) {
+    public void setPopularItems(Map<Item, Integer> popularItems) {
         this.popularItems = new HashMap<>(popularItems);
     }
 

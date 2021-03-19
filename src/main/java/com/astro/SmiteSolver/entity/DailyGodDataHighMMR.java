@@ -14,7 +14,7 @@ public class DailyGodDataHighMMR extends DailyGodData {
     }
 
     public DailyGodDataHighMMR(LocalDate date, Integer godID, String godName, Integer matchesPlayed, Integer wins,
-                               Integer bans, Map<String, Integer> skinsUsed, Map<String, Integer> popularItems,
+                               Integer bans, Map<String, Integer> skinsUsed, Map<Item, Integer> popularItems,
                                Map<String, Integer> popularActives, Integer averageDamageDone,
                                Integer averageBasicAttackDamage, Integer averageDamageMitigated) {
         super(date, godID, godName, matchesPlayed, wins, bans, skinsUsed, popularItems, popularActives,

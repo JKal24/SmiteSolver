@@ -273,18 +273,18 @@ public class PerformanceDataService {
         return (List<TotalGodDataLowMMR>) lowMMRPerformanceRepository.findAll();
     }
 
-    private Map<String, Integer> removeNameCountMap(Map<String, Integer> map, Set<Map.Entry<String, Integer>> entrySet) {
-        for (Map.Entry<String, Integer> entry : entrySet) {
-            String key = entry.getKey();
+    private <T> Map<T, Integer> removeNameCountMap(Map<T, Integer> map, Set<Map.Entry<T, Integer>> entrySet) {
+        for (Map.Entry<T, Integer> entry : entrySet) {
+            T key = entry.getKey();
             int value = map.getOrDefault(key, 0) - entry.getValue();
             map.put(key, Math.max(value, 0));
         }
         return map;
     }
 
-    private Map<String, Integer> addNameCountMap(Map<String, Integer> map, Set<Map.Entry<String, Integer>> entrySet) {
-        for (Map.Entry<String, Integer> entry : entrySet) {
-            String key = entry.getKey();
+    private <T> Map<T, Integer> addNameCountMap(Map<T, Integer> map, Set<Map.Entry<T, Integer>> entrySet) {
+        for (Map.Entry<T, Integer> entry : entrySet) {
+            T key = entry.getKey();
             map.put(key, map.getOrDefault(key, 0) + entry.getValue());
         }
         return map;
