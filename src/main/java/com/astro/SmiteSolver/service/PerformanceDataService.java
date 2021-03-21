@@ -154,11 +154,11 @@ public class PerformanceDataService {
         int totalMatchesPlayed = godData.getTotalMatchesPlayed();
         int matchesAdded = dailyGodData.getMatchesPlayed();
 
-        godData.setAverageBasicAttackDamage(calcAdditionAverageStat(godData.getAverageBasicAttackDamage(), dailyGodData.getAverageBasicAttackDamage(),
+        godData.setAverageBasicAttackDamage(calcAdditionAverageStat(godData.getAverageBasicAttackDamage(), dailyGodData.getAverageBasicAttackDPM(),
                 totalMatchesPlayed, matchesAdded));
-        godData.setAverageDamageDone(calcAdditionAverageStat(godData.getAverageDamageDone(), dailyGodData.getAverageDamageDone(),
+        godData.setAverageDamageDone(calcAdditionAverageStat(godData.getAverageDamageDone(), dailyGodData.getAverageDPM(),
                 totalMatchesPlayed, matchesAdded));
-        godData.setAverageDamageMitigated(calcAdditionAverageStat(godData.getAverageDamageMitigated(), dailyGodData.getAverageDamageMitigated(),
+        godData.setAverageDamageMitigated(calcAdditionAverageStat(godData.getAverageDamageMitigated(), dailyGodData.getAverageDmgMitigatedPerMin(),
                 totalMatchesPlayed, matchesAdded));
 
         int numMatches = utils.roundZero(totalMatchesPlayed + matchesAdded);
@@ -203,11 +203,11 @@ public class PerformanceDataService {
         int matchesCut = dailyGodData.getMatchesPlayed();
 
         godData.setAverageBasicAttackDamage(calcDeletionAverageStat(godData.getAverageBasicAttackDamage(),
-                dailyGodData.getAverageBasicAttackDamage(), totalMatchesPlayed, matchesCut));
+                dailyGodData.getAverageBasicAttackDPM(), totalMatchesPlayed, matchesCut));
         godData.setAverageDamageDone(calcDeletionAverageStat(godData.getAverageDamageDone(),
-                dailyGodData.getAverageDamageDone(), totalMatchesPlayed, matchesCut));
+                dailyGodData.getAverageDPM(), totalMatchesPlayed, matchesCut));
         godData.setAverageDamageMitigated(calcDeletionAverageStat(godData.getAverageDamageMitigated(),
-                dailyGodData.getAverageDamageMitigated(), totalMatchesPlayed, matchesCut));
+                dailyGodData.getAverageDmgMitigatedPerMin(), totalMatchesPlayed, matchesCut));
 
         int numMatches = utils.roundZero(totalMatchesPlayed - matchesCut);
         int numBans = godData.getTotalBans() - dailyGodData.getBans();

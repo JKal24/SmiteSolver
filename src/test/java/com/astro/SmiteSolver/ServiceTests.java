@@ -8,6 +8,7 @@ import com.astro.SmiteSolver.service.PerformanceDataService;
 import com.astro.SmiteSolver.service.UpdateService;
 
 import com.astro.smitebasic.api.SmiteAPI;
+import com.astro.smitebasic.objects.gamedata.UserInfo;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -37,7 +38,8 @@ public class ServiceTests {
 
     @Test
     public void updateTest() {
-        System.out.println(api.getDataUsed()[0]);
+        UserInfo[] info = api.getDataUsed();
+        System.out.println(info[0]);
     }
 
     @Test

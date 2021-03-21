@@ -44,15 +44,15 @@ public class DailyGodData {
     @Column(name = "count")
     private Map<String, Integer> popularActives;
 
-    private Integer averageDamageDone;
+    private Integer averageDPM;
 
-    private Integer averageBasicAttackDamage;
+    private Integer averageBasicAttackDPM;
 
-    private Integer averageDamageMitigated;
+    private Integer averageDmgMitigatedPerMin;
 
     public DailyGodData(LocalDate date, Integer godID, String godName, Integer matchesPlayed, Integer wins, Integer bans,
                         Map<String, Integer> skinsUsed, Map<Item, Integer> popularItems, Map<String, Integer> popularActives,
-                        Integer averageDamageDone, Integer averageBasicAttackDamage, Integer averageDamageMitigated) {
+                        Integer averageDPM, Integer averageBasicAttackDPM, Integer averageDmgMitigatedPerMin) {
         this.dataID = date.getDayOfMonth() + date.getMonthValue() + date.getYear() + godID;
         this.date = date;
         this.godID = godID;
@@ -63,9 +63,9 @@ public class DailyGodData {
         this.skinsUsed = skinsUsed;
         this.popularItems = popularItems;
         this.popularActives = popularActives;
-        this.averageDamageDone = averageDamageDone;
-        this.averageBasicAttackDamage = averageBasicAttackDamage;
-        this.averageDamageMitigated = averageDamageMitigated;
+        this.averageDPM = averageDPM;
+        this.averageBasicAttackDPM = averageBasicAttackDPM;
+        this.averageDmgMitigatedPerMin = averageDmgMitigatedPerMin;
     }
 
     public DailyGodData() { }
@@ -146,27 +146,27 @@ public class DailyGodData {
         this.popularActives = new HashMap<>(popularActives);
     }
 
-    public Integer getAverageDamageDone() {
-        return averageDamageDone;
+    public Integer getAverageDPM() {
+        return averageDPM;
     }
 
-    public void setAverageDamageDone(Integer averageDamageDone) {
-        this.averageDamageDone = averageDamageDone;
+    public void setAverageDPM(Integer averageDPM) {
+        this.averageDPM = averageDPM;
     }
 
-    public Integer getAverageBasicAttackDamage() {
-        return averageBasicAttackDamage;
+    public Integer getAverageBasicAttackDPM() {
+        return averageBasicAttackDPM;
     }
 
-    public void setAverageBasicAttackDamage(Integer averageBasicAttackDamage) {
-        this.averageBasicAttackDamage = averageBasicAttackDamage;
+    public void setAverageBasicAttackDPM(Integer averageBasicAttackDPM) {
+        this.averageBasicAttackDPM = averageBasicAttackDPM;
     }
 
-    public Integer getAverageDamageMitigated() {
-        return averageDamageMitigated;
+    public Integer getAverageDmgMitigatedPerMin() {
+        return averageDmgMitigatedPerMin;
     }
 
-    public void setAverageDamageMitigated(Integer averageDamageMitigated) {
-        this.averageDamageMitigated = averageDamageMitigated;
+    public void setAverageDmgMitigatedPerMin(Integer averageDmgMitigatedPerMin) {
+        this.averageDmgMitigatedPerMin = averageDmgMitigatedPerMin;
     }
 }

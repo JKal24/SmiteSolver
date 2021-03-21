@@ -199,14 +199,20 @@ public class MatchParserService {
         int incrementMatches = matchesPlayed + 1;
         data.setMatchesPlayed(incrementMatches);
 
-        Integer damageScore = ((data.getAverageDamageDone() * matchesPlayed) + damageDone) / incrementMatches;
-        data.setAverageDamageDone(damageScore);
+        Integer damageScore = ((data.getAverageDPM() * matchesPlayed) + getPerMinuteStats(damageDone, gameDuration)) / incrementMatches;
+        data.setAverageDPM(damageScore);
 
-        Integer basicAttackScores = ((data.getAverageBasicAttackDamage() * matchesPlayed) + basicAttackDamageDone) / incrementMatches;
-        data.setAverageBasicAttackDamage(basicAttackScores);
+        Integer basicAttackScores = ((data.getAverageBasicAttackDPM() * matchesPlayed)
+                + getPerMinuteStats(basicAttackDamageDone, gameDuration)) / incrementMatches;
+        data.setAverageBasicAttackDPM(basicAttackScores);
 
-        Integer damageMitigatedScores = ((data.getAverageDamageMitigated() * matchesPlayed) + damageMitigated) / incrementMatches;
-        data.setAverageDamageMitigated(damageMitigatedScores);
+        Integer damageMitigatedScores = ((data.getAverageDmgMitigatedPerMin() * matchesPlayed)
+                + getPerMinuteStats(damageMitigated, gameDuration)) / incrementMatches;
+        data.setAverageDmgMitigatedPerMin(damageMitigatedScores);
+    }
+
+    private int getPerMinuteStats(int val, int duration) {
+        return (val / duration) * 60;
     }
 
     public void incrementWins(DailyGodData data) {
