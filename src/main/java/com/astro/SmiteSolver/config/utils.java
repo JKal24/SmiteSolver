@@ -19,4 +19,8 @@ public class utils {
     public static int roundZero(int val) {
         return val == 0 ? 1 : val;
     }
+
+    public static double roundZero(double val) {
+        return val == 0.0 ? 1.0 : val;
+    }
 }

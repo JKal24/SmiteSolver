@@ -1,7 +1,6 @@
 package com.astro.SmiteSolver.entity;
 
 import javax.persistence.*;
-import java.math.BigDecimal;
 import java.util.Map;
 
 @MappedSuperclass
@@ -16,25 +15,25 @@ public class TotalGodData {
 
     private Integer newPatchMatchesPlayed;
 
-    private BigDecimal movingPickRate;
+    private double movingPickRate;
 
-    private BigDecimal newPatchPickRate;
+    private double newPatchPickRate;
 
     private Integer totalWins;
 
     private Integer newPatchWins;
 
-    private BigDecimal movingWinRate;
+    private double movingWinRate;
 
-    private BigDecimal newPatchWinRate;
+    private double newPatchWinRate;
 
     private Integer totalBans;
 
     private Integer newPatchBans;
 
-    private BigDecimal movingBanRate;
+    private double movingBanRate;
 
-    private BigDecimal newPatchBanRate;
+    private double newPatchBanRate;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "total_data_skins_used",
@@ -43,16 +42,15 @@ public class TotalGodData {
     @Column(name = "count")
     private Map<String, Integer> skinsUsed;
 
-    @ElementCollection(fetch = FetchType.EAGER)
+    @ElementCollection(fetch = FetchType.LAZY, targetClass = Item.class)
     @CollectionTable(name = "total_data_items_used",
-            joinColumns = {@JoinColumn(name = "god_id", referencedColumnName = "godID")})
+            joinColumns = {@JoinColumn(name = "god_id")})
     @MapKeyColumn(name = "name")
-    @Column(name = "count")
     private Map<Item, Integer> popularItems;
 
-    @ElementCollection(fetch = FetchType.EAGER)
+    @ElementCollection(fetch = FetchType.LAZY, targetClass = Item.class)
     @CollectionTable(name = "total_data_new_patch_items_used",
-            joinColumns = {@JoinColumn(name = "god_id", referencedColumnName = "godID")})
+            joinColumns = {@JoinColumn(name = "god_id")})
     @MapKeyColumn(name = "name")
     @Column(name = "count")
     private Map<Item, Integer> newPatchPopularItems;
@@ -71,9 +69,9 @@ public class TotalGodData {
     private Integer averageDamageMitigated;
 
     public TotalGodData(Integer godID, String godName, Integer totalMatchesPlayed, Integer newPatchMatchesPlayed,
-                        BigDecimal movingPickRate, BigDecimal newPatchPickRate, Integer totalWins, Integer newPatchWins,
-                        BigDecimal movingWinRate, BigDecimal newPatchWinRate, Integer totalBans, Integer newPatchBans,
-                        BigDecimal movingBanRate, BigDecimal newPatchBanRate, Map<String, Integer> skinsUsed,
+                        double movingPickRate, double newPatchPickRate, Integer totalWins, Integer newPatchWins,
+                        double movingWinRate, double newPatchWinRate, Integer totalBans, Integer newPatchBans,
+                        double movingBanRate, double newPatchBanRate, Map<String, Integer> skinsUsed,
                         Map<Item, Integer> popularItems, Map<Item, Integer> newPatchPopularItems, Map<String, Integer> popularActives,
                         Integer averageDamageDone, Integer averageBasicAttackDamage, Integer averageDamageMitigated) {
         this.godID = godID;
@@ -125,19 +123,19 @@ public class TotalGodData {
         this.newPatchMatchesPlayed = newPatchMatchesPlayed;
     }
 
-    public BigDecimal getMovingPickRate() {
+    public double getMovingPickRate() {
         return movingPickRate;
     }
 
-    public void setMovingPickRate(BigDecimal movingPickRate) {
+    public void setMovingPickRate(double movingPickRate) {
         this.movingPickRate = movingPickRate;
     }
 
-    public BigDecimal getNewPatchPickRate() {
+    public double getNewPatchPickRate() {
         return newPatchPickRate;
     }
 
-    public void setNewPatchPickRate(BigDecimal newPatchPickRate) {
+    public void setNewPatchPickRate(double newPatchPickRate) {
         this.newPatchPickRate = newPatchPickRate;
     }
 
@@ -157,19 +155,19 @@ public class TotalGodData {
         this.newPatchWins = newPatchWins;
     }
 
-    public BigDecimal getMovingWinRate() {
+    public double getMovingWinRate() {
         return movingWinRate;
     }
 
-    public void setMovingWinRate(BigDecimal movingWinRate) {
+    public void setMovingWinRate(double movingWinRate) {
         this.movingWinRate = movingWinRate;
     }
 
-    public BigDecimal getNewPatchWinRate() {
+    public double getNewPatchWinRate() {
         return newPatchWinRate;
     }
 
-    public void setNewPatchWinRate(BigDecimal newPatchWinRate) {
+    public void setNewPatchWinRate(double newPatchWinRate) {
         this.newPatchWinRate = newPatchWinRate;
     }
 
@@ -189,19 +187,19 @@ public class TotalGodData {
         this.newPatchBans = newPatchBans;
     }
 
-    public BigDecimal getMovingBanRate() {
+    public double getMovingBanRate() {
         return movingBanRate;
     }
 
-    public void setMovingBanRate(BigDecimal movingBanRate) {
+    public void setMovingBanRate(double movingBanRate) {
         this.movingBanRate = movingBanRate;
     }
 
-    public BigDecimal getNewPatchBanRate() {
+    public double getNewPatchBanRate() {
         return newPatchBanRate;
     }
 
-    public void setNewPatchBanRate(BigDecimal newPatchBanRate) {
+    public void setNewPatchBanRate(double newPatchBanRate) {
         this.newPatchBanRate = newPatchBanRate;
     }
 

@@ -9,6 +9,7 @@ import java.util.Map;
 public class DailyGodData {
 
     @Id
+    @GeneratedValue(strategy=GenerationType.AUTO)
     private Integer dataID;
 
     private LocalDate date;
@@ -53,7 +54,6 @@ public class DailyGodData {
     public DailyGodData(LocalDate date, Integer godID, String godName, Integer matchesPlayed, Integer wins, Integer bans,
                         Map<String, Integer> skinsUsed, Map<Item, Integer> popularItems, Map<String, Integer> popularActives,
                         Integer averageDPM, Integer averageBasicAttackDPM, Integer averageDmgMitigatedPerMin) {
-        this.dataID = date.getDayOfMonth() + date.getMonthValue() + date.getYear() + godID;
         this.date = date;
         this.godID = godID;
         this.godName = godName;

@@ -1,6 +1,7 @@
 package com.astro.SmiteSolver.entity;
 
 import javax.persistence.Embeddable;
+import java.util.Objects;
 
 @Embeddable
 public class Item {
@@ -30,5 +31,18 @@ public class Item {
 
     public void setItemName(String itemName) {
         this.itemName = itemName;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Item)) return false;
+        Item item = (Item) o;
+        return getItemID() == item.getItemID() && getItemName().equals(item.getItemName());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getItemID(), getItemName());
     }
 }

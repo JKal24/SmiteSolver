@@ -91,7 +91,8 @@ public class PerformanceDataService {
         highMMRPerformanceRepository.findById(godID).ifPresentOrElse(godData -> {
             highMMRPerformanceRepository.save(processAddedGodData(godData, dataHighMMR, totalMatches, newPatchMatches));
         }, () -> godNameRepository.findById(godID).ifPresentOrElse(name ->
-                highMMRPerformanceRepository.save(new TotalGodDataHighMMR(godID, name.getGodName())),
+                highMMRPerformanceRepository.save(processAddedGodData(new TotalGodDataHighMMR(godID, name.getGodName()),
+                        dataHighMMR, totalMatches, newPatchMatches)),
                 () -> {
             throw new GodNotFoundException(String.format("Could not find appropriate data for the god ID: %d", godID));
         }));
@@ -101,7 +102,8 @@ public class PerformanceDataService {
         lowMMRPerformanceRepository.findById(godID).ifPresentOrElse(godData -> {
             lowMMRPerformanceRepository.save(processAddedGodData(godData, dataLowMMR, totalMatches, newPatchMatches));
         }, () -> godNameRepository.findById(godID).ifPresentOrElse(name ->
-                lowMMRPerformanceRepository.save(new TotalGodDataLowMMR(godID, name.getGodName())),
+                lowMMRPerformanceRepository.save(processAddedGodData(new TotalGodDataLowMMR(godID, name.getGodName()),
+                        dataLowMMR, totalMatches, newPatchMatches)),
                 () -> {
             throw new GodNotFoundException(String.format("Could not find appropriate data for the god ID: %d", godID));
         }));
@@ -150,7 +152,7 @@ public class PerformanceDataService {
     }
 
 
-    private <T extends TotalGodData, H extends DailyGodData> T processAddedGodData(T godData, H dailyGodData, int totalMatches, int newPatchMatches) {
+    private <T extends TotalGodData, H extends DailyGodData> T processAddedGodData(T godData, H dailyGodData, double totalMatches, int newPatchMatches) {
         int totalMatchesPlayed = godData.getTotalMatchesPlayed();
         int matchesAdded = dailyGodData.getMatchesPlayed();
 
@@ -162,7 +164,7 @@ public class PerformanceDataService {
                 totalMatchesPlayed, matchesAdded));
 
         int numMatches = utils.roundZero(totalMatchesPlayed + matchesAdded);
-        int newPatchNumMatches = godData.getNewPatchMatchesPlayed() + matchesAdded;
+        int newPatchNumMatches = utils.roundZero(godData.getNewPatchMatchesPlayed() + matchesAdded);
 
         int bans = dailyGodData.getBans();
         int numBans = godData.getTotalBans() + bans;
@@ -181,13 +183,13 @@ public class PerformanceDataService {
         godData.setTotalWins(numWins);
         godData.setNewPatchWins(newPatchNumWins);
 
-        godData.setMovingPickRate(new BigDecimal(numMatches / utils.roundZero(totalMatches)));
+        godData.setMovingPickRate(numMatches / utils.roundZero(totalMatches));
         godData.setNewPatchPickRate(calcAdditionPercentageStat(godData.getNewPatchPickRate(), matchesAdded, totalMatchesPlayed, newPatchMatches));
 
-        godData.setMovingBanRate(new BigDecimal(numBans / numMatches));
-        godData.setNewPatchBanRate(calcAdditionPercentageStat(godData.getNewPatchBanRate(), dailyGodData.getWins(), totalMatchesPlayed, matchesAdded));
+        godData.setMovingBanRate(numBans / (double) utils.roundZero(numMatches));
+        godData.setNewPatchBanRate(calcAdditionPercentageStat(godData.getNewPatchBanRate(), dailyGodData.getBans(), totalMatchesPlayed, matchesAdded));
 
-        godData.setMovingWinRate(new BigDecimal(numWins / numMatches));
+        godData.setMovingWinRate(numWins / (double) utils.roundZero(numMatches));
         godData.setNewPatchWinRate(calcAdditionPercentageStat(godData.getNewPatchWinRate(), dailyGodData.getWins(), totalMatchesPlayed, matchesAdded));
 
         godData.setSkinsUsed(addNameCountMap(godData.getSkinsUsed(), dailyGodData.getSkinsUsed().entrySet()));
@@ -198,7 +200,7 @@ public class PerformanceDataService {
         return godData;
     }
 
-    private <T extends TotalGodData, H extends DailyGodData> T processDeletedGodData(T godData, H dailyGodData, int totalMatches) {
+    private <T extends TotalGodData, H extends DailyGodData> T processDeletedGodData(T godData, H dailyGodData, double totalMatches) {
         int totalMatchesPlayed = utils.roundZero(godData.getTotalMatchesPlayed());
         int matchesCut = dailyGodData.getMatchesPlayed();
 
@@ -217,9 +219,9 @@ public class PerformanceDataService {
         godData.setTotalBans(numBans);
         godData.setTotalWins(numWins);
 
-        godData.setMovingPickRate(new BigDecimal(numMatches / totalMatches));
-        godData.setMovingBanRate(new BigDecimal(numBans / numMatches));
-        godData.setMovingWinRate(new BigDecimal(numWins / numMatches));
+        godData.setMovingPickRate(numMatches / totalMatches);
+        godData.setMovingBanRate(numBans / (double) numMatches);
+        godData.setMovingWinRate(numWins / (double) numMatches);
 
         godData.setSkinsUsed(removeNameCountMap(godData.getSkinsUsed(), dailyGodData.getSkinsUsed().entrySet()));
         godData.setPopularActives(removeNameCountMap(godData.getPopularActives(), dailyGodData.getPopularActives().entrySet()));
@@ -228,7 +230,7 @@ public class PerformanceDataService {
         return godData;
     }
 
-    private <T extends TotalGodData, H extends DailyGodData> T processNewPatchDeletedGodData(T godData, H dailyGodData, int newPatchMatches) {
+    private <T extends TotalGodData, H extends DailyGodData> T processNewPatchDeletedGodData(T godData, H dailyGodData, double newPatchMatches) {
         int numNewPatchMatches = utils.roundZero(godData.getNewPatchMatchesPlayed() - dailyGodData.getMatchesPlayed());
         int numNewPatchBans = godData.getNewPatchBans() - dailyGodData.getBans();
         int numNewPatchWins = godData.getNewPatchWins() - dailyGodData.getWins();
@@ -237,9 +239,9 @@ public class PerformanceDataService {
         godData.setNewPatchBans(numNewPatchBans);
         godData.setNewPatchWins(numNewPatchWins);
 
-        godData.setNewPatchPickRate(new BigDecimal(numNewPatchMatches / newPatchMatches));
-        godData.setNewPatchBanRate(new BigDecimal(numNewPatchBans / numNewPatchMatches));
-        godData.setNewPatchWinRate(new BigDecimal(numNewPatchWins / numNewPatchMatches));
+        godData.setNewPatchPickRate(numNewPatchMatches / newPatchMatches);
+        godData.setNewPatchBanRate(numNewPatchBans / (double) numNewPatchMatches);
+        godData.setNewPatchWinRate(numNewPatchWins / (double) numNewPatchMatches);
 
         godData.setNewPatchPopularItems(removeNameCountMap(godData.getNewPatchPopularItems(), dailyGodData.getPopularItems().entrySet()));
 
@@ -253,12 +255,11 @@ public class PerformanceDataService {
 
     private int calcAdditionAverageStat(int totalStat, int dailyStat, int totalMatchesPlayed, int matchesAdded) {
         int newTotalMatches = utils.roundZero(totalMatchesPlayed + matchesAdded);
-        return (totalStat * totalMatchesPlayed + dailyStat * matchesAdded) / newTotalMatches;
+        return ((totalStat * totalMatchesPlayed) + (dailyStat * matchesAdded)) / newTotalMatches;
     }
 
-    private BigDecimal calcAdditionPercentageStat(BigDecimal totalStat, int dailyTotal, int totalMatchesPlayed, int matchesAdded) {
-        return (totalStat.multiply(BigDecimal.valueOf(totalMatchesPlayed)).add(BigDecimal.valueOf(dailyTotal)))
-                .divide(BigDecimal.valueOf(totalMatchesPlayed + matchesAdded), RoundingMode.CEILING);
+    private double calcAdditionPercentageStat(double totalStat, int dailyTotal, int totalMatchesPlayed, double matchesAdded) {
+        return ((totalStat * totalMatchesPlayed) + dailyTotal) / (totalMatchesPlayed + matchesAdded);
     }
 
     public void configureMatchData(LocalDate date, Integer matchesPlayedHighMMR, Integer matchesPlayedLowMMR) {

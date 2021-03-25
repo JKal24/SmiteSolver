@@ -8,17 +8,16 @@ import java.util.Map;
 @Entity(name="total_god_data_high_mmr")
 public class TotalGodDataHighMMR extends TotalGodData{
     public TotalGodDataHighMMR(Integer godID, String godName) {
-        super(godID, godName, 0,0, new BigDecimal(0), new BigDecimal(0),
-                0, 0, new BigDecimal(0), new BigDecimal(0), 0, 0,
-                new BigDecimal(0), new BigDecimal(0), new HashMap<String, Integer>(),
-                new HashMap<Item, Integer>(), new HashMap<Item, Integer>(), new HashMap<String, Integer>(),
-                0, 0, 0);
+        super(godID, godName, 0,0, 0.0, 0.0, 0,
+                0, 0.0, 0.0, 0, 0, 0.0,
+                0.0, new HashMap<String, Integer>(), new HashMap<>(), new HashMap<>(),
+                new HashMap<>(), 0, 0, 0);
     }
 
     public TotalGodDataHighMMR(Integer godID, String godName, Integer totalMatchesPlayed, Integer newPatchMatchesPlayed,
-                               BigDecimal movingPickRate, BigDecimal newPatchPickRate, Integer totalWins, Integer newPatchWins,
-                               BigDecimal movingWinRate, BigDecimal newPatchWinRate, Integer totalBans, Integer newPatchBans,
-                               BigDecimal movingBanRate, BigDecimal newPatchBanRate, Map<String, Integer> skinsUsed,
+                               double movingPickRate, double newPatchPickRate, Integer totalWins, Integer newPatchWins,
+                               double movingWinRate, double newPatchWinRate, Integer totalBans, Integer newPatchBans,
+                               double movingBanRate, double newPatchBanRate, Map<String, Integer> skinsUsed,
                                Map<Item, Integer> popularItems, Map<Item, Integer> newPatchPopularItems,
                                Map<String, Integer> popularActives, Integer averageDamageDone, Integer averageBasicAttackDamage,
                                Integer averageDamageMitigated) {

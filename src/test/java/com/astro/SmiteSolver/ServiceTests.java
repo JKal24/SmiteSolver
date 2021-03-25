@@ -13,6 +13,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -50,8 +53,6 @@ public class ServiceTests {
 
     @Test
     public void godDataTest() {
-        matchParserService.updatePatch();
-
         for (DailyGodDataHighMMR dataHighMMR : makeDailyHighMMRGodData(utils.getComparableDate(5), 10)) {
             performanceDataService.addHighMMRGodData(dataHighMMR.getGodID(), dataHighMMR, 50, 30);
         }
@@ -70,12 +71,11 @@ public class ServiceTests {
 
     private List<DailyGodDataHighMMR> makeDailyHighMMRGodData(LocalDate date, int len) {
         List<DailyGodDataHighMMR> godList = new ArrayList<>();
+        GodName god = getRandomGod();
+        int godID = god.getGodID();
+        String name = god.getGodName();
 
         for (int parse = 0; parse < len; parse++) {
-            GodName god = getRandomGod();
-            int godID = god.getGodID();
-            String name = god.getGodName();
-
             godList.add(new DailyGodDataHighMMR(date, godID, name, getRandomParameters(100, 10),
                     getRandomParameters(50, 5), getRandomParameters(75, 15), getRandomMap(5),
                     getItemRandomMap(5), getRandomMap(5), getRandomParameters(55000, 5000),
