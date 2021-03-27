@@ -2,11 +2,10 @@ package com.astro.SmiteSolver.entity;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.Map;
 
 @MappedSuperclass
-public class DailyGodData {
+public abstract class DailyGodData {
 
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
@@ -24,27 +23,6 @@ public class DailyGodData {
 
     private Integer bans;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "skins_used",
-            joinColumns = {@JoinColumn(name = "data_id", referencedColumnName = "dataID")})
-    @MapKeyColumn(name = "name")
-    @Column(name = "count")
-    private Map<String, Integer> skinsUsed;
-
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "items_used",
-            joinColumns = {@JoinColumn(name = "data_id", referencedColumnName = "dataID")})
-    @MapKeyColumn(name = "name")
-    @Column(name = "count")
-    private Map<Item, Integer> popularItems;
-
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "actives_used",
-            joinColumns = {@JoinColumn(name = "data_id", referencedColumnName = "dataID")})
-    @MapKeyColumn(name = "name")
-    @Column(name = "count")
-    private Map<String, Integer> popularActives;
-
     private Integer averageDPM;
 
     private Integer averageBasicAttackDPM;
@@ -52,7 +30,6 @@ public class DailyGodData {
     private Integer averageDmgMitigatedPerMin;
 
     public DailyGodData(LocalDate date, Integer godID, String godName, Integer matchesPlayed, Integer wins, Integer bans,
-                        Map<String, Integer> skinsUsed, Map<Item, Integer> popularItems, Map<String, Integer> popularActives,
                         Integer averageDPM, Integer averageBasicAttackDPM, Integer averageDmgMitigatedPerMin) {
         this.date = date;
         this.godID = godID;
@@ -60,9 +37,6 @@ public class DailyGodData {
         this.matchesPlayed = matchesPlayed;
         this.wins = wins;
         this.bans = bans;
-        this.skinsUsed = skinsUsed;
-        this.popularItems = popularItems;
-        this.popularActives = popularActives;
         this.averageDPM = averageDPM;
         this.averageBasicAttackDPM = averageBasicAttackDPM;
         this.averageDmgMitigatedPerMin = averageDmgMitigatedPerMin;
@@ -122,30 +96,6 @@ public class DailyGodData {
         this.bans = bans;
     }
 
-    public Map<String, Integer> getSkinsUsed() {
-        return new HashMap<>(skinsUsed);
-    }
-
-    public void setSkinsUsed(Map<String, Integer> skinsUsed) {
-        this.skinsUsed = new HashMap<>(skinsUsed);
-    }
-
-    public Map<Item, Integer> getPopularItems() {
-        return new HashMap<>(popularItems);
-    }
-
-    public void setPopularItems(Map<Item, Integer> popularItems) {
-        this.popularItems = new HashMap<>(popularItems);
-    }
-
-    public Map<String, Integer> getPopularActives() {
-        return new HashMap<>(popularActives);
-    }
-
-    public void setPopularActives(Map<String, Integer> popularActives) {
-        this.popularActives = new HashMap<>(popularActives);
-    }
-
     public Integer getAverageDPM() {
         return averageDPM;
     }
@@ -169,4 +119,18 @@ public class DailyGodData {
     public void setAverageDmgMitigatedPerMin(Integer averageDmgMitigatedPerMin) {
         this.averageDmgMitigatedPerMin = averageDmgMitigatedPerMin;
     }
+
+    // Must have these fields in sub-tables.
+
+    public abstract Map<String, Integer> getSkinsUsed();
+
+    public abstract void setSkinsUsed(Map<String, Integer> skinsUsed);
+
+    public abstract Map<Item, Integer> getPopularItems();
+
+    public abstract void setPopularItems(Map<Item, Integer> popularItems);
+
+    public abstract Map<String, Integer> getPopularActives();
+
+    public abstract void setPopularActives(Map<String, Integer> popularActives);
 }

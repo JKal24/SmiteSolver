@@ -137,8 +137,7 @@ public class MatchParserService {
         Integer[] matchIDs = Arrays.stream(info)
                 .map(MatchInfo::getMatchID)
                 .toArray(Integer[]::new);
-        List<PlayerMatchData> data = api.getMultipleMatchData(matchIDs);
-        return data;
+        return api.getMultipleMatchData(matchIDs);
     }
 
     public List<PlayerMatchData> getDailyMultiMatchData(LocalDate date, int hour, int minutes) {

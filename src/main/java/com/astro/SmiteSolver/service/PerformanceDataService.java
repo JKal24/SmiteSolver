@@ -89,10 +89,13 @@ public class PerformanceDataService {
 
     public void addHighMMRGodData(int godID, DailyGodDataHighMMR dataHighMMR, int totalMatches, int newPatchMatches) {
         highMMRPerformanceRepository.findById(godID).ifPresentOrElse(godData -> {
-            highMMRPerformanceRepository.save(processAddedGodData(godData, dataHighMMR, totalMatches, newPatchMatches));
-        }, () -> godNameRepository.findById(godID).ifPresentOrElse(name ->
-                highMMRPerformanceRepository.save(processAddedGodData(new TotalGodDataHighMMR(godID, name.getGodName()),
-                        dataHighMMR, totalMatches, newPatchMatches)),
+            TotalGodDataHighMMR foundData = processAddedGodData(godData, dataHighMMR, totalMatches, newPatchMatches);
+            highMMRPerformanceRepository.save(foundData);
+        }, () -> godNameRepository.findById(godID).ifPresentOrElse(name -> {
+                    TotalGodDataHighMMR newData = processAddedGodData(new TotalGodDataHighMMR(godID, name.getGodName()),
+                            dataHighMMR, totalMatches, newPatchMatches);
+                    highMMRPerformanceRepository.save(newData);
+                },
                 () -> {
             throw new GodNotFoundException(String.format("Could not find appropriate data for the god ID: %d", godID));
         }));

@@ -2,6 +2,7 @@ package com.astro.SmiteSolver;
 
 import com.astro.SmiteSolver.config.utils;
 import com.astro.SmiteSolver.entity.*;
+import com.astro.SmiteSolver.repository.DailyHighMMRDailyGodDataRepository;
 import com.astro.SmiteSolver.repository.GodNameRepository;
 import com.astro.SmiteSolver.service.MatchParserService;
 import com.astro.SmiteSolver.service.PerformanceDataService;
@@ -13,9 +14,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.math.BigDecimal;
-import java.math.MathContext;
-import java.math.RoundingMode;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -37,12 +35,28 @@ public class ServiceTests {
     private GodNameRepository godNameRepository;
 
     @Autowired
+    private DailyHighMMRDailyGodDataRepository dailyHighMMRDailyGodDataRepository;
+
+    @Autowired
     private SmiteAPI api;
 
     @Test
     public void updateTest() {
         UserInfo[] info = api.getDataUsed();
         System.out.println(info[0]);
+    }
+
+    @Test
+    public void dailyDataTest() {
+        matchParserService.updatePatch();
+
+        for (DailyGodDataHighMMR dataHighMMR : makeDailyHighMMRGodData(utils.getComparableDate(0), 5)) {
+            dailyHighMMRDailyGodDataRepository.save(dataHighMMR);
+        }
+
+        for (DailyGodDataHighMMR dataHighMMR : dailyHighMMRDailyGodDataRepository.findAll()) {
+            dailyHighMMRDailyGodDataRepository.delete(dataHighMMR);
+        }
     }
 
     @Test
@@ -53,6 +67,8 @@ public class ServiceTests {
 
     @Test
     public void godDataTest() {
+        matchParserService.updatePatch();
+
         for (DailyGodDataHighMMR dataHighMMR : makeDailyHighMMRGodData(utils.getComparableDate(5), 10)) {
             performanceDataService.addHighMMRGodData(dataHighMMR.getGodID(), dataHighMMR, 50, 30);
         }
@@ -105,7 +121,7 @@ public class ServiceTests {
     private GodName getRandomGod() {
         try {
             List<GodName> names = (List<GodName>) godNameRepository.findAll();
-            return names.get((int) (Math.random() * names.size()));
+            return names.size() == 0 ? new GodName(0, "") : names.get((int) (Math.random() * names.size()));
         } catch (IndexOutOfBoundsException e) {
             e.printStackTrace();
         }

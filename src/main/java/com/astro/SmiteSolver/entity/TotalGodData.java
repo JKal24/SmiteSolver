@@ -4,9 +4,10 @@ import javax.persistence.*;
 import java.util.Map;
 
 @MappedSuperclass
-public class TotalGodData {
+public abstract class TotalGodData {
 
     @Id
+    @Column(name = "god_id")
     private Integer godID;
 
     private String godName;
@@ -35,33 +36,6 @@ public class TotalGodData {
 
     private double newPatchBanRate;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "total_data_skins_used",
-            joinColumns = {@JoinColumn(name = "god_id", referencedColumnName = "godID")})
-    @MapKeyColumn(name = "name")
-    @Column(name = "count")
-    private Map<String, Integer> skinsUsed;
-
-    @ElementCollection(fetch = FetchType.LAZY, targetClass = Item.class)
-    @CollectionTable(name = "total_data_items_used",
-            joinColumns = {@JoinColumn(name = "god_id")})
-    @MapKeyColumn(name = "name")
-    private Map<Item, Integer> popularItems;
-
-    @ElementCollection(fetch = FetchType.LAZY, targetClass = Item.class)
-    @CollectionTable(name = "total_data_new_patch_items_used",
-            joinColumns = {@JoinColumn(name = "god_id")})
-    @MapKeyColumn(name = "name")
-    @Column(name = "count")
-    private Map<Item, Integer> newPatchPopularItems;
-
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "total_data_actives_used",
-            joinColumns = {@JoinColumn(name = "god_id", referencedColumnName = "godID")})
-    @MapKeyColumn(name = "name")
-    @Column(name = "count")
-    private Map<String, Integer> popularActives;
-
     private Integer averageDamageDone;
 
     private Integer averageBasicAttackDamage;
@@ -71,9 +45,8 @@ public class TotalGodData {
     public TotalGodData(Integer godID, String godName, Integer totalMatchesPlayed, Integer newPatchMatchesPlayed,
                         double movingPickRate, double newPatchPickRate, Integer totalWins, Integer newPatchWins,
                         double movingWinRate, double newPatchWinRate, Integer totalBans, Integer newPatchBans,
-                        double movingBanRate, double newPatchBanRate, Map<String, Integer> skinsUsed,
-                        Map<Item, Integer> popularItems, Map<Item, Integer> newPatchPopularItems, Map<String, Integer> popularActives,
-                        Integer averageDamageDone, Integer averageBasicAttackDamage, Integer averageDamageMitigated) {
+                        double movingBanRate, double newPatchBanRate, Integer averageDamageDone,
+                        Integer averageBasicAttackDamage, Integer averageDamageMitigated) {
         this.godID = godID;
         this.godName = godName;
         this.totalMatchesPlayed = totalMatchesPlayed;
@@ -88,16 +61,14 @@ public class TotalGodData {
         this.newPatchBans = newPatchBans;
         this.movingBanRate = movingBanRate;
         this.newPatchBanRate = newPatchBanRate;
-        this.skinsUsed = skinsUsed;
-        this.popularItems = popularItems;
-        this.newPatchPopularItems = newPatchPopularItems;
-        this.popularActives = popularActives;
         this.averageDamageDone = averageDamageDone;
         this.averageBasicAttackDamage = averageBasicAttackDamage;
         this.averageDamageMitigated = averageDamageMitigated;
     }
 
-    public TotalGodData() { }
+    public TotalGodData() {
+
+    }
 
     public Integer getGodID() {
         return godID;
@@ -203,38 +174,6 @@ public class TotalGodData {
         this.newPatchBanRate = newPatchBanRate;
     }
 
-    public Map<String, Integer> getSkinsUsed() {
-        return skinsUsed;
-    }
-
-    public void setSkinsUsed(Map<String, Integer> skinsUsed) {
-        this.skinsUsed = skinsUsed;
-    }
-
-    public Map<Item, Integer> getPopularItems() {
-        return popularItems;
-    }
-
-    public void setPopularItems(Map<Item, Integer> popularItems) {
-        this.popularItems = popularItems;
-    }
-
-    public Map<Item, Integer> getNewPatchPopularItems() {
-        return newPatchPopularItems;
-    }
-
-    public void setNewPatchPopularItems(Map<Item, Integer> newPatchPopularItems) {
-        this.newPatchPopularItems = newPatchPopularItems;
-    }
-
-    public Map<String, Integer> getPopularActives() {
-        return popularActives;
-    }
-
-    public void setPopularActives(Map<String, Integer> popularActives) {
-        this.popularActives = popularActives;
-    }
-
     public Integer getAverageDamageDone() {
         return averageDamageDone;
     }
@@ -259,6 +198,22 @@ public class TotalGodData {
         this.averageDamageMitigated = averageDamageMitigated;
     }
 
+    public abstract Map<String, Integer> getSkinsUsed();
+
+    public abstract void setSkinsUsed(Map<String, Integer> skinsUsed);
+
+    public abstract Map<Item, Integer> getPopularItems();
+
+    public abstract void setPopularItems(Map<Item, Integer> popularItems);
+
+    public abstract Map<Item, Integer> getNewPatchPopularItems();
+
+    public abstract void setNewPatchPopularItems(Map<Item, Integer> newPatchPopularItems);
+
+    public abstract Map<String, Integer> getPopularActives();
+
+    public abstract void setPopularActives(Map<String, Integer> popularActives);
+
     @Override
     public String toString() {
         return "TotalGodData{" +
@@ -276,10 +231,6 @@ public class TotalGodData {
                 ", newPatchBans=" + newPatchBans +
                 ", movingBanRate=" + movingBanRate +
                 ", newPatchBanRate=" + newPatchBanRate +
-                ", skinsUsed=" + skinsUsed +
-                ", popularItems=" + popularItems +
-                ", newPatchPopularItems=" + newPatchPopularItems +
-                ", popularActives=" + popularActives +
                 ", averageDamageDone=" + averageDamageDone +
                 ", averageBasicAttackDamage=" + averageBasicAttackDamage +
                 ", averageDamageMitigated=" + averageDamageMitigated +
