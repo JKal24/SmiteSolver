@@ -39,7 +39,7 @@ public class MatchParserService {
     private UpdateService updateService;
 
     @Autowired
-    private PerformanceDataService performanceDataService;
+    private DataCompilationService dataCompilationService;
 
     @Autowired
     private GodNameRepository godNameRepository;
@@ -128,8 +128,8 @@ public class MatchParserService {
                 averageMMRList.add(playerMatchData.getRankStatConquest());
             }
         }
-        performanceDataService.compileGodData(godDataHighMMRMap, godDataLowMMRMap, matchCountHighMMR, matchCountLowMMR);
-        performanceDataService.configureMatchData(updateDate, matchCountHighMMR, matchCountLowMMR);
+        dataCompilationService.compileGodData(godDataHighMMRMap, godDataLowMMRMap, matchCountHighMMR, matchCountLowMMR);
+        dataCompilationService.configureMatchData(updateDate, matchCountHighMMR, matchCountLowMMR);
     }
 
     public List<PlayerMatchData> getDailyMultiMatchData(LocalDate date, int hour) {
