@@ -1,15 +1,10 @@
 package com.astro.SmiteSolver;
 
-import com.astro.SmiteSolver.entity.GodName;
-import com.astro.SmiteSolver.entity.TotalGodDataHighMMR;
-import com.astro.SmiteSolver.entity.TotalGodDataLowMMR;
-import com.astro.SmiteSolver.repository.DailyHighMMRDailyGodDataRepository;
 import com.astro.SmiteSolver.repository.GodNameRepository;
-import com.astro.SmiteSolver.service.MatchParserService;
 import com.astro.SmiteSolver.service.DataCompilationService;
+import com.astro.SmiteSolver.service.MatchParserService;
 import com.astro.SmiteSolver.service.PerformanceDataService;
 import com.astro.SmiteSolver.service.UpdateService;
-
 import com.astro.smitebasic.api.SmiteAPI;
 import com.astro.smitebasic.objects.gamedata.UserInfo;
 import org.junit.jupiter.api.Test;
@@ -41,6 +36,12 @@ public class ServiceTests {
     public void updateTest() {
         UserInfo[] info = api.getDataUsed();
         System.out.println(info[0]);
+    }
+
+    @Test
+    public void dataTest() {
+        updateService.tempDel();
+        matchParserService.updateData();
     }
 
 }

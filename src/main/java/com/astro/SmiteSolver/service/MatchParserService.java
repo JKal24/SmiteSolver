@@ -6,6 +6,7 @@ import com.astro.SmiteSolver.repository.GodNameRepository;
 import com.astro.smitebasic.api.SmiteAPI;
 import com.astro.smitebasic.api.Utils;
 import com.astro.smitebasic.objects.characters.GodInfo;
+import com.astro.smitebasic.objects.gamedata.PatchInfo;
 import com.astro.smitebasic.objects.gamedata.matches.MatchInfo;
 import com.astro.smitebasic.objects.player.matches.PlayerMatchData;
 import com.astro.smitebasic.utils.Language;
@@ -148,7 +149,10 @@ public class MatchParserService {
     }
 
     public void updatePatch() {
-        Double version = Utils.parseSingleEntry(api.getPatchInfo()).getVersion();
+        PatchInfo[] patchInfos = api.getPatchInfo();
+        if (patchInfos == null)
+            return;
+        Double version = Utils.parseSingleEntry(patchInfos).getVersion();
 
         if (updateService.isUpdatableVersion(version)) {
 

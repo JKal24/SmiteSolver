@@ -31,7 +31,12 @@ public class UpdateService {
     }
 
     public void tempDel() {
-        updateRepository.deleteAll();
+        LocalDate date = utils.getComparableDate(1);
+        for (UpdateData data : updateRepository.findAll()) {
+            if (data.getDate().equals(date)) {
+                updateRepository.delete(data);
+            }
+        }
     }
 
     public LocalDate getVersionUpdateDate() {
