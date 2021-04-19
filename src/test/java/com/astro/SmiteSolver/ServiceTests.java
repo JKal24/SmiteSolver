@@ -7,6 +7,8 @@ import com.astro.SmiteSolver.service.PerformanceDataService;
 import com.astro.SmiteSolver.service.UpdateService;
 import com.astro.smitebasic.api.SmiteAPI;
 import com.astro.smitebasic.objects.gamedata.UserInfo;
+import com.astro.smitebasic.objects.items.BaseItemInfo;
+import com.astro.smitebasic.utils.Language;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -40,8 +42,9 @@ public class ServiceTests {
 
     @Test
     public void dataTest() {
-        updateService.tempDel();
-        matchParserService.updateData();
+        for (BaseItemInfo info : api.getItems(Language.ENGLISH.getLanguageID())) {
+            System.out.println(info);
+        }
     }
 
 }

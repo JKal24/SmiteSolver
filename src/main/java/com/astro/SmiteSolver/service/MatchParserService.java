@@ -8,6 +8,7 @@ import com.astro.smitebasic.api.Utils;
 import com.astro.smitebasic.objects.characters.GodInfo;
 import com.astro.smitebasic.objects.gamedata.PatchInfo;
 import com.astro.smitebasic.objects.gamedata.matches.MatchInfo;
+import com.astro.smitebasic.objects.items.BaseItemInfo;
 import com.astro.smitebasic.objects.player.matches.PlayerMatchData;
 import com.astro.smitebasic.utils.Language;
 import com.astro.smitebasic.utils.Mode;
@@ -158,20 +159,18 @@ public class MatchParserService {
 
             GodInfo[] godList = api.getGods(Language.ENGLISH.getLanguageID());
             for (GodInfo info : godList) {
-
                 Integer godID = info.getGodID();
-                if (checkNewGod(godID)) {
-                    godNameRepository.save(new GodName(godID, info.getName()));
-                }
+                godNameRepository.save(new GodName(godID, info.getName()));
+            }
+
+            BaseItemInfo[] itemInfos = api.getItems(Language.ENGLISH.getLanguageID());
+            for (BaseItemInfo info : itemInfos) {
+                updateService.updateItem(new BaseItemName(info.getItemID(), info.getItemName(), info.getItemTier(), info.getItemIconURL()));
             }
         }
 
         updateService.addUpdate(utils.getComparableDate(1), version);
         updateService.cleanUpdates();
-    }
-
-    public boolean checkNewGod(Integer godID) {
-        return godNameRepository.findById(godID).isEmpty();
     }
 
     public <T extends DailyGodData> T configureGodData(PlayerMatchData playerMatchData, T data) {
@@ -233,12 +232,15 @@ public class MatchParserService {
     }
 
     public void addItems(DailyGodData data, List<Item> playerItems) {
+        List<BaseItemName> baseItemNames = updateService.getUpdatedItemList();
         Map<Item, Integer> items = data.getPopularItems();
         for (Item item : playerItems) {
-            if (items.containsKey(item)) {
-                items.put(item, items.get(item) + 1);
-            } else {
-                items.put(item, 1);
+            if (baseItemNames.stream().anyMatch(baseItem -> baseItem.getItemID() == item.getItemID() && baseItem.getItemTier() == 3)) {
+                if (items.containsKey(item)) {
+                    items.put(item, items.get(item) + 1);
+                } else {
+                    items.put(item, 1);
+                }
             }
         }
         data.setPopularItems(items);

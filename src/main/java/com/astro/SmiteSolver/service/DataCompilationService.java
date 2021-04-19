@@ -100,11 +100,11 @@ public class DataCompilationService {
     }
 
     public void addLowMMRGodData(int godID, DailyGodDataLowMMR dataLowMMR, int totalMatches, int newPatchMatches) {
-        lowMMRPerformanceRepository.findById(godID).ifPresentOrElse(godData -> {
-            lowMMRPerformanceRepository.save(processAddedGodData(godData, dataLowMMR, totalMatches, newPatchMatches));
-        }, () -> godNameRepository.findById(godID).ifPresentOrElse(name ->
-                lowMMRPerformanceRepository.save(processAddedGodData(new TotalGodDataLowMMR(godID, name.getGodName()),
-                        dataLowMMR, totalMatches, newPatchMatches)),
+        lowMMRPerformanceRepository.findById(godID).ifPresentOrElse(godData ->
+                        lowMMRPerformanceRepository.save(processAddedGodData(godData, dataLowMMR, totalMatches, newPatchMatches)),
+                () -> godNameRepository.findById(godID).ifPresentOrElse(name ->
+                                lowMMRPerformanceRepository.save(processAddedGodData(new TotalGodDataLowMMR(godID, name.getGodName()),
+                                        dataLowMMR, totalMatches, newPatchMatches)),
                 () -> {
             throw new GodNotFoundException(String.format("Could not find appropriate data for the god ID: %d", godID));
         }));
@@ -265,14 +265,6 @@ public class DataCompilationService {
 
     public void configureMatchData(LocalDate date, Integer matchesPlayedHighMMR, Integer matchesPlayedLowMMR) {
         recordedMatchRepository.save(new MatchRecordedData(date, matchesPlayedHighMMR, matchesPlayedLowMMR));
-    }
-
-    public List<TotalGodDataHighMMR> getTotalHighMMRData() {
-        return (List<TotalGodDataHighMMR>) highMMRPerformanceRepository.findAll();
-    }
-
-    public List<TotalGodDataLowMMR> getTotalLowMMRData() {
-        return (List<TotalGodDataLowMMR>) lowMMRPerformanceRepository.findAll();
     }
 
     private <T> Map<T, Integer> removeNameCountMap(Map<T, Integer> map, Set<Map.Entry<T, Integer>> entrySet) {

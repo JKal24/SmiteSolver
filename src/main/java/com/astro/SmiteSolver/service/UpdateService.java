@@ -1,13 +1,17 @@
 package com.astro.SmiteSolver.service;
 
 import com.astro.SmiteSolver.config.utils;
+import com.astro.SmiteSolver.entity.BaseItemName;
 import com.astro.SmiteSolver.entity.UpdateData;
 import com.astro.SmiteSolver.repository.GodNameRepository;
+import com.astro.SmiteSolver.repository.ItemNameRepository;
 import com.astro.SmiteSolver.repository.UpdateRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -22,6 +26,9 @@ public class UpdateService {
     @Autowired
     private GodNameRepository godNameRepository;
 
+    @Autowired
+    private ItemNameRepository itemNameRepository;
+
     public void addUpdate(LocalDate date, Double versionID) {
         this.addUpdate(new UpdateData(date, versionID));
     }
@@ -30,13 +37,15 @@ public class UpdateService {
         updateRepository.save(data);
     }
 
-    public void tempDel() {
-        LocalDate date = utils.getComparableDate(1);
-        for (UpdateData data : updateRepository.findAll()) {
-            if (data.getDate().equals(date)) {
-                updateRepository.delete(data);
-            }
-        }
+    public void updateItem(BaseItemName baseItemName) {
+        itemNameRepository.save(baseItemName);
+    }
+
+    public List<BaseItemName> getUpdatedItemList() {
+        Iterable<BaseItemName> baseItemNames = itemNameRepository.findAll();
+        List<BaseItemName> baseItemNameList = new ArrayList<>();
+        baseItemNames.iterator().forEachRemaining(baseItemNameList::add);
+        return baseItemNameList;
     }
 
     public LocalDate getVersionUpdateDate() {
