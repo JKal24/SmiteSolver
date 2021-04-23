@@ -2,6 +2,7 @@ package com.astro.SmiteSolver.service;
 
 import com.astro.SmiteSolver.config.utils;
 import com.astro.SmiteSolver.entity.*;
+import com.astro.SmiteSolver.exception.UpdateDataException;
 import com.astro.SmiteSolver.repository.GodNameRepository;
 import com.astro.smitebasic.api.SmiteAPI;
 import com.astro.smitebasic.api.Utils;
@@ -52,21 +53,44 @@ public class MatchParserService {
     }
 
     public void updateData() {
-        if (updateService.hasBeenUpdatedToday()) {
+        if (updateService.hasBeenUpdatedOnDay()) {
             return;
         }
         // Updates god list if version change
         updatePatch();
 
-        LocalDate updateDate = utils.getComparableDate(1);
+        LocalDate date = utils.getComparableDate(1);
 
+        processUpdateData(date);
+    }
+
+    public void updateData(int numDays) {
+        if (numDays >= 30 || numDays <= 0) {
+            throw new UpdateDataException("Cannot update data for the given number of days, " + numDays);
+        }
+        int parseDays = 1;
+
+        while (numDays > 0) {
+            LocalDate parseDate = utils.getComparableDate(parseDays);
+            if (!updateService.hasBeenUpdatedOnDay(parseDate)) {
+                processUpdateData(parseDate);
+                numDays--;
+            }
+            parseDays++;
+            if (parseDays > 30) {
+                return;
+            }
+        }
+    }
+
+    private void processUpdateData(LocalDate date) {
         Map<Integer, DailyGodDataHighMMR> godDataHighMMRMap = new HashMap<>();
         Map<Integer, DailyGodDataLowMMR> godDataLowMMRMap = new HashMap<>();
         int matchCountHighMMR = 0;
         int matchCountLowMMR = 0;
 
         for(int parseHours = 0; parseHours < 24; parseHours++) {
-            List<PlayerMatchData> matchInfo = getDailyMultiMatchData(updateDate, parseHours);
+            List<PlayerMatchData> matchInfo = getDailyMultiMatchData(date, parseHours);
             List<Float> averageMMRList = new ArrayList<>();
             PlayerMatchData currentPlayerData = matchInfo.get(0);
             int currentMatchID = currentPlayerData.getMatch();
@@ -91,12 +115,12 @@ public class MatchParserService {
 
                             if (highMMR) {
                                 bannedGodData = godDataHighMMRMap.containsKey(bannedGodID) ? godDataHighMMRMap.get(bannedGodID) :
-                                        new DailyGodDataHighMMR(updateDate, bannedGodID, bannedGodName.get().getGodName());
+                                        new DailyGodDataHighMMR(date, bannedGodID, bannedGodName.get().getGodName());
                                 godDataHighMMRMap.put(bannedGodID, (DailyGodDataHighMMR) incrementBans(bannedGodData));
 
                             } else {
                                 bannedGodData = godDataLowMMRMap.containsKey(bannedGodID) ? godDataLowMMRMap.get(bannedGodID) :
-                                        new DailyGodDataLowMMR(updateDate, bannedGodID, bannedGodName.get().getGodName());
+                                        new DailyGodDataLowMMR(date, bannedGodID, bannedGodName.get().getGodName());
                                 godDataLowMMRMap.put(bannedGodID, (DailyGodDataLowMMR) incrementBans(bannedGodData));
 
                             }
@@ -116,12 +140,12 @@ public class MatchParserService {
 
                     if (playerMatchData.getRankStatConquest() < utils.HIGH_MMR_BOUNDARY) {
                         data = godDataHighMMRMap.containsKey(key) ? godDataHighMMRMap.get(key) :
-                                new DailyGodDataHighMMR(updateDate, key, name.get().getGodName());
+                                new DailyGodDataHighMMR(date, key, name.get().getGodName());
                         godDataHighMMRMap.put(key, (DailyGodDataHighMMR) configureGodData(playerMatchData, data));
 
                     } else {
                         data = godDataLowMMRMap.containsKey(key) ? godDataLowMMRMap.get(key) :
-                                new DailyGodDataLowMMR(updateDate, key, name.get().getGodName());
+                                new DailyGodDataLowMMR(date, key, name.get().getGodName());
                         godDataLowMMRMap.put(key, (DailyGodDataLowMMR) configureGodData(playerMatchData, data));
 
                     }
@@ -131,7 +155,7 @@ public class MatchParserService {
             }
         }
         dataCompilationService.compileGodData(godDataHighMMRMap, godDataLowMMRMap, matchCountHighMMR, matchCountLowMMR);
-        dataCompilationService.configureMatchData(updateDate, matchCountHighMMR, matchCountLowMMR);
+        dataCompilationService.configureMatchData(date, matchCountHighMMR, matchCountLowMMR);
     }
 
     public List<PlayerMatchData> getDailyMultiMatchData(LocalDate date, int hour) {

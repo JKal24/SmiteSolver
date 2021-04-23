@@ -10,9 +10,7 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class DataCompilationService {
@@ -273,15 +271,25 @@ public class DataCompilationService {
             int value = map.getOrDefault(key, 0) - entry.getValue();
             map.put(key, Math.max(value, 0));
         }
+
         return map;
     }
 
-    private <T> Map<T, Integer> addNameCountMap(Map<T, Integer> map, Set<Map.Entry<T, Integer>> entrySet) {
+    public <T> Map<T, Integer> addNameCountMap(Map<T, Integer> map, Set<Map.Entry<T, Integer>> entrySet) {
         for (Map.Entry<T, Integer> entry : entrySet) {
             T key = entry.getKey();
             map.put(key, map.getOrDefault(key, 0) + entry.getValue());
         }
-        return map;
+
+        List<Map.Entry<T, Integer>> list = new ArrayList<>(map.entrySet());
+        list.sort(Map.Entry.comparingByValue());
+
+        Map<T, Integer> result = new LinkedHashMap<>();
+        for (Map.Entry<T, Integer> entry : list) {
+            result.put(entry.getKey(), entry.getValue());
+        }
+
+        return result;
     }
 
 }

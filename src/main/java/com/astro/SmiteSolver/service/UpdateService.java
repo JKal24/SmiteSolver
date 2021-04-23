@@ -68,9 +68,13 @@ public class UpdateService {
         return data;
     }
 
-    public boolean hasBeenUpdatedToday() {
+    public boolean hasBeenUpdatedOnDay(LocalDate date) {
+        return updateRepository.findById(date).isPresent();
+    }
+
+    public boolean hasBeenUpdatedOnDay() {
         LocalDate dateToday = utils.getComparableDate(1);
-        return updateRepository.findById(dateToday).isPresent();
+        return this.hasBeenUpdatedOnDay(dateToday);
     }
 
     public boolean isUpdatableVersion(double versionID) {
@@ -94,12 +98,6 @@ public class UpdateService {
                 updateRepository.delete(data);
             }
         }
-    }
-
-    public int getDaysStored() {
-        AtomicInteger size = new AtomicInteger(0);
-        updateRepository.findAll().forEach(updateData -> size.getAndIncrement());
-        return size.get();
     }
 
 }

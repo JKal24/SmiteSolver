@@ -10,13 +10,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class PerformanceDataService {
+public class DataFetchingService {
 
     @Autowired
     private HighMMRPerformanceRepository highMMRPerformanceRepository;
 
     @Autowired
     private LowMMRPerformanceRepository lowMMRPerformanceRepository;
+
+    @Autowired
+    private MatchParserService matchParserService;
 
     public <T extends TotalGodData> T getPerformanceData(int godID, boolean highMMR) {
         if (highMMR) {
@@ -36,5 +39,9 @@ public class PerformanceDataService {
             throw new GodNotFoundException(String.format("Could not find the given god for the ID, %s", godID));
 
         }
+    }
+
+    public void requestUpdate(int numDays) {
+        matchParserService.updateData(numDays);
     }
 }
