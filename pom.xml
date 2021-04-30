@@ -8,7 +8,6 @@
 		<version>1.0.0</version>
 	</parent>
 
-	<groupId>com.astro</groupId>
 	<artifactId>SmiteSolver</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>SmiteSolver</name>
