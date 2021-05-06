@@ -14,11 +14,12 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.sql.DataSource;
+import java.util.HashMap;
 
 @Configuration
-@PropertySource("classpath:application.properties")
+@PropertySource("classpath:smite.properties")
 @EnableJpaRepositories(
-        basePackages = "com.astro.SmiteSolver.repository",
+        basePackages = {"com.astro.SmiteSolver.repository", },
         entityManagerFactoryRef = "repositoryEntityManager",
         transactionManagerRef = "repositoryTransactionManager"
 )
@@ -31,10 +32,15 @@ public class RepositoryConfig {
     public LocalContainerEntityManagerFactoryBean repositoryEntityManager() {
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
         em.setDataSource(repositoryDataSource());
-        em.setPackagesToScan("com.astro.SmiteSolver.entity");
+        em.setPackagesToScan("com.astro.SmiteSolver.entity.auxillary", "com.astro.SmiteSolver.entity.dailydata", "com.astro.SmiteSolver.entity.totaldata");
 
         HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         em.setJpaVendorAdapter(vendorAdapter);
+
+        HashMap<String, Object> properties = new HashMap<>();
+        properties.put("hibernate.hbm2ddl.auto", env.getProperty("spring.jpa.hibernate.ddl-auto"));
+        properties.put("hibernate.dialect", env.getProperty("datasource.dialect"));
+        em.setJpaPropertyMap(properties);
 
         return em;
     }
@@ -43,7 +49,7 @@ public class RepositoryConfig {
     @Bean
     public DataSource repositoryDataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setUrl(env.getProperty("smite.datasource.url"));
+        dataSource.setUrl(env.getProperty("smite.datasource.jdbcUrl"));
         dataSource.setUsername(env.getProperty("datasource.username"));
         dataSource.setPassword(env.getProperty("datasource.password"));
         dataSource.setDriverClassName(env.getProperty("datasource.driverClassName"));

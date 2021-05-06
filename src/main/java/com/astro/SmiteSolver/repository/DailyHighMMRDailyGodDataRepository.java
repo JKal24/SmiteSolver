@@ -1,6 +1,6 @@
 package com.astro.SmiteSolver.repository;
 
-import com.astro.SmiteSolver.entity.DailyGodDataHighMMR;
+import com.astro.SmiteSolver.entity.dailydata.DailyGodDataHighMMR;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;

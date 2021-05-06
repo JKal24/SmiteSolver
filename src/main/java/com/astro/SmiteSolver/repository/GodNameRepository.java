@@ -1,6 +1,6 @@
 package com.astro.SmiteSolver.repository;
 
-import com.astro.SmiteSolver.entity.GodName;
+import com.astro.SmiteSolver.entity.auxillary.GodName;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;

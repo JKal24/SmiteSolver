@@ -1,6 +1,6 @@
 package com.astro.SmiteSolver.repository;
 
-import com.astro.SmiteSolver.entity.TotalGodData;
+import com.astro.SmiteSolver.entity.totaldata.TotalGodData;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.NoRepositoryBean;
 

@@ -1,9 +1,9 @@
-package com.astro.SmiteSolver.entity;
+package com.astro.SmiteSolver.entity.auxillary;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
-@Entity
+@Entity(name = "base_item_name")
 public class BaseItemName {
 
     @Id

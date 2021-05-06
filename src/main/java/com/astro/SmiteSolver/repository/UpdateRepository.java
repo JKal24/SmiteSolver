@@ -1,6 +1,6 @@
 package com.astro.SmiteSolver.repository;
 
-import com.astro.SmiteSolver.entity.UpdateData;
+import com.astro.SmiteSolver.entity.auxillary.UpdateData;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

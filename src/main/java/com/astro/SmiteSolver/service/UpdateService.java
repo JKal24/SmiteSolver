@@ -1,8 +1,8 @@
 package com.astro.SmiteSolver.service;
 
 import com.astro.SmiteSolver.config.utils;
-import com.astro.SmiteSolver.entity.BaseItemName;
-import com.astro.SmiteSolver.entity.UpdateData;
+import com.astro.SmiteSolver.entity.auxillary.BaseItemName;
+import com.astro.SmiteSolver.entity.auxillary.UpdateData;
 import com.astro.SmiteSolver.repository.GodNameRepository;
 import com.astro.SmiteSolver.repository.ItemNameRepository;
 import com.astro.SmiteSolver.repository.UpdateRepository;
@@ -27,6 +27,12 @@ public class UpdateService {
 
     @Autowired
     private ItemNameRepository itemNameRepository;
+
+    /**
+     * @param date this is the date of when the data was updated
+     * @param versionID this is the version which was recorded on the day the update went live,
+     * The versionID is not the version for the date that was updated.
+     */
 
     public void addUpdate(LocalDate date, Double versionID) {
         this.addUpdate(new UpdateData(date, versionID));
@@ -77,16 +83,7 @@ public class UpdateService {
     }
 
     public boolean isUpdatableVersion(double versionID) {
-        LocalDate dateToday = utils.getComparableDate(0);
-
-        for (int parseDates = 1; parseDates < DATA_DELETION_DAY_LIMIT; parseDates++) {
-            LocalDate prevDay = dateToday.minusDays(parseDates);
-            Optional<UpdateData> data = updateRepository.findById(prevDay);
-            if (data.isPresent()) {
-                return data.get().getVersion() == versionID;
-            }
-        }
-        return true;
+        return updateRepository.findAll().stream().noneMatch(updateData -> updateData.getVersion().equals(versionID));
     }
 
     public void cleanUpdates() {

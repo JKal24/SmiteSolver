@@ -1,10 +1,16 @@
 package com.astro.SmiteSolver.service;
 
 import com.astro.SmiteSolver.config.utils;
-import com.astro.SmiteSolver.entity.*;
+import com.astro.SmiteSolver.entity.auxillary.GodName;
+import com.astro.SmiteSolver.entity.dailydata.DailyGodData;
+import com.astro.SmiteSolver.entity.dailydata.DailyGodDataHighMMR;
+import com.astro.SmiteSolver.entity.dailydata.DailyGodDataLowMMR;
+import com.astro.SmiteSolver.entity.totaldata.MatchRecordedData;
+import com.astro.SmiteSolver.entity.totaldata.TotalGodData;
+import com.astro.SmiteSolver.entity.totaldata.TotalGodDataHighMMR;
+import com.astro.SmiteSolver.entity.totaldata.TotalGodDataLowMMR;
 import com.astro.SmiteSolver.exception.GodNotFoundException;
 import com.astro.SmiteSolver.repository.*;
-import org.hibernate.exception.GenericJDBCException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.orm.jpa.JpaSystemException;

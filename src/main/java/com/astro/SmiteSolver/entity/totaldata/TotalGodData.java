@@ -1,4 +1,6 @@
-package com.astro.SmiteSolver.entity;
+package com.astro.SmiteSolver.entity.totaldata;
+
+import com.astro.SmiteSolver.entity.auxillary.Item;
 
 import javax.persistence.*;
 import java.util.Map;

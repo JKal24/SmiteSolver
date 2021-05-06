@@ -1,8 +1,8 @@
 package com.astro.SmiteSolver.service;
 
-import com.astro.SmiteSolver.entity.TotalGodData;
-import com.astro.SmiteSolver.entity.TotalGodDataHighMMR;
-import com.astro.SmiteSolver.entity.TotalGodDataLowMMR;
+import com.astro.SmiteSolver.entity.totaldata.TotalGodData;
+import com.astro.SmiteSolver.entity.totaldata.TotalGodDataHighMMR;
+import com.astro.SmiteSolver.entity.totaldata.TotalGodDataLowMMR;
 import com.astro.SmiteSolver.exception.GodNotFoundException;
 import com.astro.SmiteSolver.repository.HighMMRPerformanceRepository;
 import com.astro.SmiteSolver.repository.LowMMRPerformanceRepository;

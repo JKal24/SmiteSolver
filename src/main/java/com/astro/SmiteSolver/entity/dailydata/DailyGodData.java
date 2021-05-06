@@ -1,4 +1,6 @@
-package com.astro.SmiteSolver.entity;
+package com.astro.SmiteSolver.entity.dailydata;
+
+import com.astro.SmiteSolver.entity.auxillary.Item;
 
 import javax.persistence.*;
 import java.time.LocalDate;

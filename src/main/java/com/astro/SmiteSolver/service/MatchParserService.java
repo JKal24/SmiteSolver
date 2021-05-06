@@ -1,7 +1,12 @@
 package com.astro.SmiteSolver.service;
 
 import com.astro.SmiteSolver.config.utils;
-import com.astro.SmiteSolver.entity.*;
+import com.astro.SmiteSolver.entity.auxillary.BaseItemName;
+import com.astro.SmiteSolver.entity.auxillary.GodName;
+import com.astro.SmiteSolver.entity.auxillary.Item;
+import com.astro.SmiteSolver.entity.dailydata.DailyGodData;
+import com.astro.SmiteSolver.entity.dailydata.DailyGodDataHighMMR;
+import com.astro.SmiteSolver.entity.dailydata.DailyGodDataLowMMR;
 import com.astro.SmiteSolver.exception.PatchNotFoundException;
 import com.astro.SmiteSolver.exception.UpdateDataException;
 import com.astro.SmiteSolver.repository.GodNameRepository;
@@ -31,6 +36,8 @@ public class MatchParserService {
 
     private static final Logger LOGGER = Logger.getLogger(MatchParserService.class.getName());
 
+    private static final int DATA_DAY_LIMIT = 30;
+
     @Value("${smite.api}")
     private String apiUri;
 
@@ -57,42 +64,29 @@ public class MatchParserService {
         api.setCredentials(apiUri, devID, authKey);
     }
 
-    public void updateData() {
-        if (updateService.hasBeenUpdatedOnDay()) {
-            return;
-        }
-        // Updates god list if version change
-        try {
-            updateInitialPatch();
-
-            LocalDate date = utils.getComparableDate(1);
-
-            processUpdateData(date);
-        } catch (PatchNotFoundException e) {
-            LOGGER.log(Level.WARNING, "Could not find patch information");
-        }
-    }
-
     public void updateData(int numDays) {
-        if (numDays >= 30 || numDays <= 0) {
+        if (numDays >= DATA_DAY_LIMIT || numDays <= 0) {
             throw new UpdateDataException("Cannot update data for the given number of days, " + numDays);
         }
         int parseDays = 1;
+
         try {
-            double version = updateInitialPatch();
+            double version = getVersion();
+            if (updateService.isUpdatableVersion(version)) updateResources();
 
             while (numDays > 0) {
                 LocalDate parseDate = utils.getComparableDate(parseDays);
                 if (!updateService.hasBeenUpdatedOnDay(parseDate)) {
-                    updatePatch(parseDate, version);
                     processUpdateData(parseDate);
+                    updatePatch(parseDate, version);
                     numDays--;
                 }
                 parseDays++;
-                if (parseDays > 30) {
+                if (parseDays > DATA_DAY_LIMIT) {
                     return;
                 }
             }
+            updateService.cleanUpdates();
         } catch (PatchNotFoundException e) {
             LOGGER.log(Level.WARNING, "Could not find patch information");
         }
@@ -104,11 +98,14 @@ public class MatchParserService {
         int matchCountHighMMR = 0;
         int matchCountLowMMR = 0;
 
-        for(int parseHours = 0; parseHours < 24; parseHours++) {
+        for (int parseHours = 0; parseHours < 24; parseHours++) {
             List<PlayerMatchData> matchInfo = getDailyMultiMatchData(date, parseHours);
+            if (matchInfo.size() <= 0) continue;
+
             List<Float> averageMMRList = new ArrayList<>();
             PlayerMatchData currentPlayerData = matchInfo.get(0);
             int currentMatchID = currentPlayerData.getMatch();
+
 
             // Parses through each player's match data where it lists their stats and god played,
             // their stats are then copied into a custom map for either high mmr or low mmr,
@@ -168,53 +165,59 @@ public class MatchParserService {
 
                 averageMMRList.add(playerMatchData.getRankStatConquest());
             }
+
         }
+
         dataCompilationService.compileGodData(godDataHighMMRMap, godDataLowMMRMap, matchCountHighMMR, matchCountLowMMR);
         dataCompilationService.configureMatchData(date, matchCountHighMMR, matchCountLowMMR);
     }
 
     public List<PlayerMatchData> getDailyMultiMatchData(LocalDate date, int hour) {
-        MatchInfo[] info = api.getMatchIDs(Mode.CONQUEST_LEAGUE.getModeID(), date, hour);
-        Integer[] matchIDs = Arrays.stream(info)
-                .map(MatchInfo::getMatchID)
-                .toArray(Integer[]::new);
-        return api.getMultipleMatchData(matchIDs);
+        try {
+            MatchInfo[] info = api.getMatchIDs(Mode.CONQUEST_LEAGUE.getModeID(), date, hour);
+            Integer[] matchIDs = Arrays.stream(info)
+                    .map(MatchInfo::getMatchID)
+                    .toArray(Integer[]::new);
+            return api.getMultipleMatchData(matchIDs);
+        } catch (NullPointerException e) {
+            return new ArrayList<>();
+        }
     }
 
     public List<PlayerMatchData> getDailyMultiMatchData(LocalDate date, int hour, int minutes) {
-        Integer[] matchIDs = Arrays.stream(api.getMatchIDs(Mode.CONQUEST_LEAGUE.getModeID(), date, hour, minutes))
-                .map(MatchInfo::getMatchID)
-                .toArray(Integer[]::new);
-        return api.getMultipleMatchData(matchIDs);
+        Integer[] matchIDs;
+        try {
+            matchIDs = Arrays.stream(api.getMatchIDs(Mode.CONQUEST_LEAGUE.getModeID(), date, hour, minutes))
+                    .map(MatchInfo::getMatchID)
+                    .toArray(Integer[]::new);
+            return api.getMultipleMatchData(matchIDs);
+        } catch (NullPointerException e) {
+            return new ArrayList<>();
+        }
     }
 
     public void updatePatch(LocalDate date, double version) {
         updateService.addUpdate(date, version);
     }
 
-    public double updateInitialPatch() {
+    public void updateResources() {
+        GodInfo[] godList = api.getGods(Language.ENGLISH.getLanguageID());
+        for (GodInfo info : godList) {
+            Integer godID = info.getGodID();
+            godNameRepository.save(new GodName(godID, info.getName()));
+        }
+
+        BaseItemInfo[] itemInfos = api.getItems(Language.ENGLISH.getLanguageID());
+        for (BaseItemInfo info : itemInfos) {
+            updateService.updateItem(new BaseItemName(info.getItemID(), info.getItemName(), info.getItemTier(), info.getItemIconURL()));
+        }
+    }
+
+    private double getVersion() {
         PatchInfo[] patchInfos = api.getPatchInfo();
         if (patchInfos == null)
             throw new PatchNotFoundException();
-        Double version = Utils.parseSingleEntry(patchInfos).getVersion();
-
-        if (updateService.isUpdatableVersion(version)) {
-
-            GodInfo[] godList = api.getGods(Language.ENGLISH.getLanguageID());
-            for (GodInfo info : godList) {
-                Integer godID = info.getGodID();
-                godNameRepository.save(new GodName(godID, info.getName()));
-            }
-
-            BaseItemInfo[] itemInfos = api.getItems(Language.ENGLISH.getLanguageID());
-            for (BaseItemInfo info : itemInfos) {
-                updateService.updateItem(new BaseItemName(info.getItemID(), info.getItemName(), info.getItemTier(), info.getItemIconURL()));
-            }
-        }
-
-        updateService.addUpdate(utils.getComparableDate(1), version);
-        updateService.cleanUpdates();
-        return version;
+        return Utils.parseSingleEntry(patchInfos).getVersion();
     }
 
     public <T extends DailyGodData> T configureGodData(PlayerMatchData playerMatchData, T data) {

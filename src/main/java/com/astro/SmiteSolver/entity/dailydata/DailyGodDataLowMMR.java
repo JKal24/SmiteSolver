@@ -1,33 +1,35 @@
-package com.astro.SmiteSolver.entity;
+package com.astro.SmiteSolver.entity.dailydata;
+
+import com.astro.SmiteSolver.entity.auxillary.Item;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
-@Entity(name="daily_god_data_high_mmr")
-public class DailyGodDataHighMMR extends DailyGodData {
+@Entity(name="daily_god_data_low_mmr")
+public class DailyGodDataLowMMR extends DailyGodData {
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "daily_skins_high_mmr")
+    @CollectionTable(name = "daily_skins_low_mmr")
     private Map<String, Integer> skinsUsed;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "daily_items_high_mmr")
+    @CollectionTable(name = "daily_items_low_mmr")
     private Map<Item, Integer> popularItems;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "daily_actives_high_mmr")
+    @CollectionTable(name = "daily_actives_low_mmr")
     private Map<String, Integer> popularActives;
 
-    public DailyGodDataHighMMR(LocalDate date, Integer godID, String godName) {
+    public DailyGodDataLowMMR(LocalDate date, Integer godID, String godName) {
         super(date, godID, godName, 0, 0, 0, 0, 0, 0);
         this.popularActives = new HashMap<>();
         this.popularItems = new HashMap<>();
         this.skinsUsed = new HashMap<>();
     }
 
-    public DailyGodDataHighMMR(LocalDate date, Integer godID, String godName, Integer matchesPlayed, Integer wins,
+    public DailyGodDataLowMMR(LocalDate date, Integer godID, String godName, Integer matchesPlayed, Integer wins,
                                Integer bans, Map<String, Integer> skinsUsed, Map<Item, Integer> popularItems,
                                Map<String, Integer> popularActives, Integer averageDamageDone,
                                Integer averageBasicAttackDamage, Integer averageDamageMitigated) {
@@ -37,7 +39,7 @@ public class DailyGodDataHighMMR extends DailyGodData {
         this.skinsUsed = skinsUsed;
     }
 
-    public DailyGodDataHighMMR() { }
+    public DailyGodDataLowMMR() { }
 
     public Map<String, Integer> getSkinsUsed() {
         return skinsUsed;
